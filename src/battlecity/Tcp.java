@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import battlecity.UserController;
 
 import proto.PlayerProtos.Player;
 import proto.TcpPacketProtos.TcpPacket;
@@ -18,23 +19,30 @@ import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
 import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
 import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
+import battlecity.ChatController;
 
 public class Tcp implements Runnable{
+	private static final String HASCONNECTED = "has connected";
 	private static Socket clientSocket = null;
 	private static OutputStream outputStream = null;
 	private static DataInputStream inputStream = null;
 	private static BufferedReader inputLine = null;
 	private static boolean closed = false;
 	private Thread thread = new Thread(this);
+	private static Player newPlayer = null;
+	public ChatController controller;
+	public static String username;
 	
-	public Tcp() {
+	public Tcp(String username, Socket clientsocket, OutputStream outputStream, DataInputStream inputStream, Player newPlayer, ChatController con) {
 //		Constructor
 		try {
-			clientSocket = new Socket("202.92.144.45", 80);
+			this.clientSocket = clientsocket;
 			inputLine = new BufferedReader(new InputStreamReader(System.in));
-			outputStream = clientSocket.getOutputStream();
-			inputStream = new DataInputStream(clientSocket.getInputStream());
-			
+			this.outputStream = outputStream;
+			this.inputStream = inputStream;
+			this.username = username;
+			this.newPlayer = newPlayer;
+			this.controller = con;
 			TCPConnect();
 		} catch (UnknownHostException e) {
 			System.err.println("Unknown host");
@@ -44,155 +52,34 @@ public class Tcp implements Runnable{
 	}
 	
 	public void TCPConnect() throws IOException{
+		int serverOutputLength = 0; 
+		byte[] serverOutput = null;
 		if (clientSocket != null && outputStream != null && inputStream != null) {
 			try {
-				// creates thread that reads input from the server
-				
-				System.out.println("Welcome to 202.92.144.45!");
-				Scanner sc = new Scanner(System.in);
-				
-				int choice = 0;
-				String name = null;
-				System.out.println("Enter your name:");
-				name = inputLine.readLine().trim();
-				
-				while (choice != 1 || choice != 2) {
-					System.out.println("Options");
-					System.out.println("[1] Create Lobby");
-					System.out.println("[2] Join Lobby");
-					choice = sc.nextInt();
-					if (choice == 1 || choice == 2) break;
-				}
-				
-				CreateLobbyPacket receivedCL = null;
-				ConnectPacket connectPacket = null;
-				ConnectPacket receivedC = null;
-				ErrLdnePacket lobbyNotFound = null;
-
-				Player newPlayer = Player.newBuilder()
-						.setName(name)
-						.build();
-				String lobbyId = null;
-				int serverOutputLength = 0; 
-				byte[] serverOutput = null; 
-				
-// CREATE LOBBY OPTION
-				if (choice == 1){
-					
-					System.out.print("Enter the maximum number of players: ");
-					int max = sc.nextInt();
-					CreateLobbyPacket createLobby = CreateLobbyPacket.newBuilder()
-							.setType(PacketType.CREATE_LOBBY)
-							.setMaxPlayers(max)
-							.build();
-					outputStream.write(createLobby.toByteArray());
-					
-//					Initialize byte []
-					serverOutput = new byte[0];
-					while(serverOutputLength == 0 ) {
-						serverOutputLength = inputStream.available();
-						serverOutput = new byte[serverOutputLength];
-						inputStream.readFully(serverOutput);
-					}
-					
-					receivedCL = TcpPacket.CreateLobbyPacket.parseFrom(serverOutput);
-
-				}else if (choice == 2){
-					System.out.print("Enter lobby ID: ");
-					sc = new Scanner(System.in);
-					lobbyId = sc.nextLine().trim(); 
-				}
-				
-				String terLobbyId = (choice == 1) ? receivedCL.getLobbyId() : lobbyId;
-
-				// Try to connect to the LobbyId 
-				connectPacket = ConnectPacket.newBuilder()
-						.setType(PacketType.CONNECT)
-						.setLobbyId(terLobbyId)
-						.setPlayer(newPlayer)
-						.build();
-	
-				outputStream.write(connectPacket.toByteArray());
-				
+				thread.start();
+//				Get the list of players currently in lobby upon entering the lobby 
+				PlayerListPacket playerList = PlayerListPacket.newBuilder()
+					.setType(PacketType.PLAYER_LIST)
+					.build();
+				outputStream.write(playerList.toByteArray());
 				serverOutputLength = 0; // reset to 0
 				serverOutput = new byte[0]; // reset byte [] 
-				while(serverOutputLength == 0 ) {
-					serverOutputLength = inputStream.available();
-					serverOutput = new byte[serverOutputLength];
-					inputStream.readFully(serverOutput);
-				}
-								
-//				Get the received packet
-				
-				TcpPacket receivedPacket = TcpPacket.parseFrom(serverOutput);
-				
-				if (receivedPacket.getType() == PacketType.CONNECT){
-					receivedC = TcpPacket.ConnectPacket.parseFrom(serverOutput);
-					if (receivedC.isInitialized()){
-						System.out.println("Successfully connected to " + receivedC.getLobbyId());
-						thread.start();
-
-//						Get the list of players currently in lobby upon entering the lobby 
-						PlayerListPacket playerList = PlayerListPacket.newBuilder()
-						.setType(PacketType.PLAYER_LIST)
-						.build();
-						outputStream.write(playerList.toByteArray());
-					}else{
-						System.out.println("Something went wrong, failed to connect to " + terLobbyId);
-						closed = true;
-					}
-				}else if(receivedPacket.getType() == PacketType.ERR_LDNE || receivedPacket.getType() == PacketType.ERR_LFULL || receivedPacket.getType() == PacketType.ERR){
-					System.out.println(receivedPacket);
-					closed = true; 
-				}
-
-				
-				while (!closed && (!clientSocket.isClosed() || !(clientSocket.isInputShutdown() || clientSocket.isOutputShutdown()))){
-//					Check if connection is active
-//					Start chat
-					
-					if (closed || clientSocket.isClosed() || (clientSocket.isInputShutdown() || clientSocket.isOutputShutdown())){
-						System.out.println("Connection is closed. Exitting...");
-						break;
-					}
-					
-					serverOutputLength = inputStream.available();
-					serverOutput = new byte[serverOutputLength];
-					inputStream.readFully(serverOutput);
-
-//					For sending messages to server / other clients
-					
-					String message = inputLine.readLine();
-					System.out.println(message);
-					if (message != "") {
-						if (message.equals("exit")){
-//							Send disconnect packet
-							DisconnectPacket thisDisconnect = DisconnectPacket.newBuilder()
-									.setType(PacketType.DISCONNECT)
-									.build();
-							thread.stop();
-							outputStream.write(thisDisconnect.toByteArray());
-							closed = true;
-						}else {
-							TcpPacket.ChatPacket sendChat = TcpPacket.ChatPacket.newBuilder()
-					        		.setType(PacketType.CHAT)
-					        		.setMessage(message)
-					        		.setPlayer(newPlayer)
-					        		.build();
-							outputStream.write(sendChat.toByteArray());
-						}  
-					}
-				}
-
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				outputStream.close();
-				inputStream.close();
-				clientSocket.close();
 			}
 		}
 	}
+    public static void send(String msg) throws IOException {
+    	if (msg != "") {
+		TcpPacket.ChatPacket sendChat = TcpPacket.ChatPacket.newBuilder()
+		        .setType(PacketType.CHAT)
+		        .setMessage(msg)
+		        .setPlayer(newPlayer)
+		        .build();
+		outputStream.write(sendChat.toByteArray());
+		}
+    }
+    
 	public void run() {
 //		Server output after connecting to Lobby Chat
 		try {
@@ -207,14 +94,17 @@ public class Tcp implements Runnable{
 					TcpPacket received = TcpPacket.parseFrom(msg);
 					if (received.getType() == PacketType.CHAT){
 						ChatPacket chatreceived = TcpPacket.ChatPacket.parseFrom(msg);
-						System.out.println(chatreceived.getPlayer().getName() + ": " + chatreceived.getMessage());
+						controller.addToChat(chatreceived);
 					}else if(received.getType() == PacketType.CONNECT){
 						ConnectPacket newUserConnect = TcpPacket.ConnectPacket.parseFrom(msg);
-						System.out.println(newUserConnect.getPlayer().getName() + " connected to the lobby.");
+						controller.addAsServer(newUserConnect.getPlayer().getName() + " connected to the lobby.");
+						PlayerListPacket updatePlayerList = PlayerListPacket.newBuilder()
+								.setType(PacketType.PLAYER_LIST)
+								.build();
+						outputStream.write(updatePlayerList.toByteArray());
 					}else if(received.getType() == PacketType.DISCONNECT){
 						DisconnectPacket userDisconnect = TcpPacket.DisconnectPacket.parseFrom(msg);
-						System.out.println(userDisconnect.getPlayer().getName() + " disconnected from the lobby.");
-						
+						controller.addAsServer(userDisconnect.getPlayer().getName() + " disconnected from the lobby.");
 //						Someone disconnected, update player list
 						PlayerListPacket updatePlayerList = PlayerListPacket.newBuilder()
 								.setType(PacketType.PLAYER_LIST)
@@ -223,13 +113,7 @@ public class Tcp implements Runnable{
 
 					}else if(received.getType() == PacketType.PLAYER_LIST){
 						PlayerListPacket playerList= TcpPacket.PlayerListPacket.parseFrom(msg);
-						int numConnected = playerList.getPlayerListCount();
-						System.out.println(numConnected + " users in the lobby:");
-						
-						for(int i=0; i < numConnected; i++){
-							printPlayer(playerList.getPlayerList(i));
-						}
-						
+						controller.setUserList(playerList);
 					}
 				}
 				msgLen = 0; // reset msgLen for the if condition
@@ -237,10 +121,6 @@ public class Tcp implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void printPlayer(Player p){
-		System.out.println("Name: " + p.getName() + " [" + p.getId() +"]");
 	}
 	
 }
