@@ -193,7 +193,7 @@ public class UserController implements Initializable {
         Platform.runLater(() -> {
             Stage stage = (Stage) usernameTextfield.getScene().getWindow();
             stage.setResizable(true);
-            stage.setWidth(600);
+            stage.setWidth(1200);
             stage.setHeight(620);
 
             stage.setOnCloseRequest((WindowEvent e) -> {
@@ -201,7 +201,7 @@ public class UserController implements Initializable {
                 System.exit(0);
             });
             stage.setScene(this.scene);
-            stage.setMinWidth(600);
+            stage.setMinWidth(1000);
             stage.setMinHeight(620);
             stage.centerOnScreen();
             con.setUsernameLabel(usernameTextfield.getText());

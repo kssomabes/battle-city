@@ -132,6 +132,7 @@ public class ChatController {
             t.setDaemon(true);
             t.start();
         }
+        chatPane.scrollTo(chatPane.getItems().size());
     }
     
     /* Method to display server messages */
@@ -145,7 +146,7 @@ public class ChatController {
                         null, null)));
                 HBox x = new HBox();
                 bl6.setBubbleSpec(BubbleSpec.FACE_BOTTOM);
-                x.setAlignment(Pos.BOTTOM_RIGHT);
+                x.setAlignment(Pos.CENTER);
                 x.getChildren().addAll(bl6);
                 return x;
             }

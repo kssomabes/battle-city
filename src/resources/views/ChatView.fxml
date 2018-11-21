@@ -14,10 +14,40 @@
 <?import java.lang.String?>
 
 <BorderPane fx:id="borderPane" maxHeight="620.0" maxWidth="600.0" prefHeight="620.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battlecity.ChatController">
-   <center>
+   <right>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0">
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="400" pannable="true" prefHeight="496.0" vbarPolicy="ALWAYS" vmin="1.0" vvalue="1.0" VBox.vgrow="ALWAYS">
+		      <VBox maxHeight="1.7976931348623157E308" BorderPane.alignment="CENTER">
+		         <children>
+		            <HBox fx:id="onlineUsersHbox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" stylesheets="@ListViewStyle.css">
+		               <children>
+		                  <Label prefHeight="50.0" prefWidth="124.0" text="Online Users:" textAlignment="CENTER" textFill="#fc6747">
+		                     <font>
+		                        <Font name="SansSerif Regular" size="14.0" />
+		                     </font>
+		                     <padding>
+		                        <Insets left="10.0" />
+		                     </padding>
+		                     <opaqueInsets>
+		                        <Insets bottom="10.0" />
+		                     </opaqueInsets>
+		                  </Label>
+		                  <Label fx:id="onlineCountLabel" prefHeight="48.0" prefWidth="86.0" text="0" textFill="#fc6747">
+		                     <opaqueInsets>
+		                        <Insets />
+		                     </opaqueInsets>
+		                     <font>
+		                        <Font name="SansSerif Regular" size="14.0" />
+		                     </font>
+		                  </Label>
+		               </children>
+		            </HBox>
+		            <ListView fx:id="userList" focusTraversable="false" maxHeight="1.7976931348623157E308" prefHeight="300" prefWidth="200.0" style="-fx-border-image-width: 0;" stylesheets="@ListViewStyle.css">
+		            </ListView>
+		         </children>
+		      </VBox>
+            
+            <ScrollPane fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="400" pannable="true" prefHeight="300" vbarPolicy="ALWAYS" vmin="1.0" vvalue="1.0" VBox.vgrow="ALWAYS">
                <content>
                   <ListView fx:id="chatPane" maxHeight="1.7976931348623157E308" maxWidth="400.0" prefHeight="200.0" prefWidth="400.0" />
                </content>
@@ -34,7 +64,8 @@
             </HBox>
          </children>
       </VBox>
-   </center>
+   </right>
+   <!--
    <left>
       <VBox maxHeight="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
@@ -66,6 +97,7 @@
          </children>
       </VBox>
    </left>
+   -->
    <top>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="640.0" style="-fx-background-color: #031c30;" BorderPane.alignment="CENTER">
          <center>
