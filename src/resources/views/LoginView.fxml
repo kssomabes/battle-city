@@ -37,8 +37,12 @@
          	<Label fx:id="lobbyIdLabelFielderr1"  text="Cannot Connect" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
          	<Label fx:id="lobbyIdLabelFielderr2"  text="Invalid Lobby ID" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
          	<Label fx:id="lobbyIdLabelFielderr3"  text="Username is empty" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
+         	<Label fx:id="lobbyIdLabelFielderr4"  text="Players should only be 3-4" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
         	<Label fx:id="lobbyIdLabelField"  text="Lobby ID: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="false"/>
         	<TextField fx:id="lobbyIdTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" visible="false"/>
+         <Label fx:id="playerNumberLabelField"  text="Player count: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="true"/>
+         <TextField fx:id="playerNumberTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" visible="true"/>
+
          	<VBox GridPane.columnIndex="2" GridPane.rowIndex="5">
 			    <fx:define>
 			        <ToggleGroup fx:id="tgCommand"/>

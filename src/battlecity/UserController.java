@@ -56,9 +56,12 @@ public class UserController implements Initializable {
     @FXML private TextField usernameTextfield;
     @FXML private Label lobbyIdLabelField;
     @FXML private TextField lobbyIdTextField;
+    @FXML private Label playerNumberLabelField; 		// Player number
+    @FXML private TextField playerNumberTextField; 	// Player number
     @FXML private Label lobbyIdLabelFielderr1;
     @FXML private Label lobbyIdLabelFielderr2;
     @FXML private Label lobbyIdLabelFielderr3;
+    @FXML private Label lobbyIdLabelFielderr4; // Player number
     @FXML private BorderPane borderPane;
     private double xOffset;
     private double yOffset;
@@ -66,9 +69,9 @@ public class UserController implements Initializable {
     public static ChatController con;
     
     private static Socket clientSocket = null;
-	private static OutputStream outputStream = null;
-	private static DataInputStream inputStream = null;
-	private static BufferedReader inputLine = null;
+		private static OutputStream outputStream = null;
+		private static DataInputStream inputStream = null;
+		private static BufferedReader inputLine = null;
 
     private static UserController instance;
 
@@ -79,8 +82,10 @@ public class UserController implements Initializable {
     public static UserController getInstance() {
         return instance;
     }
+
+
     public void loginButtonAction() throws IOException {
-    	int serverOutputLength = 0; 
+  	int serverOutputLength = 0; 
 		byte[] serverOutput = null;
 		if (usernameTextfield.getText().equals("")) {
 			lobbyIdLabelFielderr1.setVisible(false);
@@ -94,6 +99,8 @@ public class UserController implements Initializable {
 				inputStream = new DataInputStream(clientSocket.getInputStream());
 				int createLobby = 0;
 				String lobbyId = lobbyIdTextField.getText();
+				int numPlayers = Integer.parseInt(playerNumberTextField.getText());
+
 				CreateLobbyPacket receivedCL = null;
 				ConnectPacket connectPacket = null;
 				ConnectPacket receivedC = null;
@@ -103,7 +110,7 @@ public class UserController implements Initializable {
 						
 					CreateLobbyPacket createLobbyInit = CreateLobbyPacket.newBuilder()
 							.setType(PacketType.CREATE_LOBBY)
-							.setMaxPlayers(4)
+							.setMaxPlayers(numPlayers)
 							.build();
 					outputStream.write(createLobbyInit.toByteArray());
 						
@@ -182,11 +189,15 @@ public class UserController implements Initializable {
     public void showLobby() throws IOException {
     	lobbyIdLabelField.setVisible(true);
     	lobbyIdTextField.setVisible(true);
+    	playerNumberLabelField.setVisible(false);
+    	playerNumberTextField.setVisible(false);
     }
     
     public void hideLobby() throws IOException {
     	lobbyIdLabelField.setVisible(false);
-    	lobbyIdTextField.setVisible(false);       
+    	lobbyIdTextField.setVisible(false);
+    	playerNumberLabelField.setVisible(true);
+    	playerNumberTextField.setVisible(true);       
     }
 
     public void showScene() throws IOException {
