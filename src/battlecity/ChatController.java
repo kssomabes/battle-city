@@ -70,10 +70,10 @@ public class ChatController {
     
     public void sendButtonAction() throws IOException {
         String msg = messageBox.getText();
-        if (!messageBox.getText().isEmpty()) {
-            Tcp.send(msg);
-            messageBox.clear();
+        if (messageBox.getText().trim().length() > 0) {
+            Tcp.send(msg.trim());
         }
+        messageBox.clear();
     }
     
     public void sendMethod(KeyEvent event) throws IOException {
@@ -115,7 +115,7 @@ public class ChatController {
                         null, null)));
                 HBox x = new HBox();
                 x.setMaxWidth(chatPane.getWidth() - 20);
-                x.setAlignment(Pos.TOP_RIGHT);
+                x.setAlignment(Pos.BOTTOM_RIGHT);
                 bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
                 x.getChildren().addAll(bl6);
                 return x;
@@ -145,7 +145,7 @@ public class ChatController {
                         null, null)));
                 HBox x = new HBox();
                 bl6.setBubbleSpec(BubbleSpec.FACE_BOTTOM);
-                x.setAlignment(Pos.CENTER);
+                x.setAlignment(Pos.BOTTOM_RIGHT);
                 x.getChildren().addAll(bl6);
                 return x;
             }
