@@ -14,6 +14,8 @@
 <?import java.lang.String?>
 
 <BorderPane fx:id="borderPane" maxHeight="620.0" maxWidth="600.0" prefHeight="620.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battlecity.ChatController">
+   <center>
+   </center>
    <right>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0">
          <children>

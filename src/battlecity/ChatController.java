@@ -1,6 +1,13 @@
 package battlecity;
 
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import battlecity.Main;
 import javafx.application.Platform;
@@ -9,11 +16,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -158,5 +167,18 @@ public class ChatController {
         Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();
+    }
+    
+    public void setGame() {
+    	GameController gameController = new GameController();
+		SwingNode swingNode = new SwingNode();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                swingNode.setContent(gameController);
+            }
+        });
+        borderPane.setCenter(swingNode);
     }
 }

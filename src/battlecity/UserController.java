@@ -148,6 +148,7 @@ public class UserController implements Initializable {
 				        Parent window = (Pane) fmxlLoader.load();
 				        con = fmxlLoader.<ChatController>getController();
 				        con.setLobby(lobbyId);
+				        con.setGame();
 				        this.scene = new Scene(window);
 				        this.showScene();
 				        Tcp listener = new Tcp(username, clientSocket, outputStream, inputStream, newPlayer, con);
