@@ -99,7 +99,10 @@ public class UserController implements Initializable {
 				inputStream = new DataInputStream(clientSocket.getInputStream());
 				int createLobby = 0;
 				String lobbyId = lobbyIdTextField.getText();
-				int numPlayers = Integer.parseInt(playerNumberTextField.getText());
+				int numPlayers = 1;
+				if(playerNumberTextField.getText().length() > 0) {
+					numPlayers = Integer.parseInt(playerNumberTextField.getText());
+				}
 
 				CreateLobbyPacket receivedCL = null;
 				ConnectPacket connectPacket = null;
