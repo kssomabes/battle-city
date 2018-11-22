@@ -7,16 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
-import battlecity.UserController;
 
 import proto.PlayerProtos.Player;
 import proto.TcpPacketProtos.TcpPacket;
 import proto.TcpPacketProtos.TcpPacket.ChatPacket;
 import proto.TcpPacketProtos.TcpPacket.ConnectPacket;
-import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
 import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
-import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
 import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
 import battlecity.ChatController;
@@ -38,11 +34,11 @@ public class Tcp implements Runnable{
 		try {
 			this.clientSocket = clientsocket;
 			inputLine = new BufferedReader(new InputStreamReader(System.in));
-			this.outputStream = outputStream;
-			this.inputStream = inputStream;
-			this.username = username;
-			this.newPlayer = newPlayer;
-			this.controller = con;
+			Tcp.outputStream = outputStream;
+			Tcp.inputStream = inputStream;
+			Tcp.username = username;
+			Tcp.newPlayer = newPlayer;
+			this.controller = con; 
 			TCPConnect();
 		} catch (UnknownHostException e) {
 			System.err.println("Unknown host");

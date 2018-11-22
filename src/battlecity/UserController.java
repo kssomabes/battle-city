@@ -51,7 +51,7 @@ import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
 import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
 
-public class UserController implements Initializable {
+public class UserController extends Pane implements Initializable {
     @FXML private ImageView Defaultview;
     @FXML private TextField usernameTextfield;
     @FXML private Label lobbyIdLabelField;
@@ -63,18 +63,22 @@ public class UserController implements Initializable {
     @FXML private Label lobbyIdLabelFielderr3;
     @FXML private Label lobbyIdLabelFielderr4; // Player number
     @FXML private BorderPane borderPane;
+    
+    @FXML ToggleGroup tgCommand; 
+    
     private double xOffset;
     private double yOffset;
     private Scene scene;
     public static ChatController con;
     
     private static Socket clientSocket = null;
-		private static OutputStream outputStream = null;
-		private static DataInputStream inputStream = null;
-		private static BufferedReader inputLine = null;
+	private static OutputStream outputStream = null;
+	private static DataInputStream inputStream = null;
+	private static BufferedReader inputLine = null;
 
     private static UserController instance;
-
+    private Main application;
+ 
     public UserController() {
         instance = this;
     }
@@ -82,11 +86,17 @@ public class UserController implements Initializable {
     public static UserController getInstance() {
         return instance;
     }
-
+    
+    void setApp(Main application) {
+    	this.application = application;
+    }
 
     public void loginButtonAction() throws IOException {
-  	int serverOutputLength = 0; 
+    	int serverOutputLength = 0; 
 		byte[] serverOutput = null;
+		RadioButton selected = (RadioButton) tgCommand.getSelectedToggle();
+		String toggleGroupValue = selected.getId();
+		
 		if (usernameTextfield.getText().equals("")) {
 			lobbyIdLabelFielderr1.setVisible(false);
 			lobbyIdLabelFielderr2.setVisible(false);
@@ -97,17 +107,16 @@ public class UserController implements Initializable {
 				clientSocket = new Socket("202.92.144.45", 80);
 				outputStream = clientSocket.getOutputStream();
 				inputStream = new DataInputStream(clientSocket.getInputStream());
-				int createLobby = 0;
-				String lobbyId = lobbyIdTextField.getText();
-				int numPlayers = Integer.parseInt(playerNumberTextField.getText());
-
+				
 				CreateLobbyPacket receivedCL = null;
 				ConnectPacket connectPacket = null;
 				ConnectPacket receivedC = null;
 				ErrLdnePacket lobbyNotFound = null;
-				if (!lobbyIdTextField.isVisible()) {
-					createLobby = 1;
-						
+				String lobbyId = "";
+				
+//				Check radio button: create or join
+				if (toggleGroupValue.equals("createLobbyRb")) {
+					int numPlayers = Integer.parseInt(playerNumberTextField.getText());
 					CreateLobbyPacket createLobbyInit = CreateLobbyPacket.newBuilder()
 							.setType(PacketType.CREATE_LOBBY)
 							.setMaxPlayers(numPlayers)
@@ -123,10 +132,11 @@ public class UserController implements Initializable {
 						
 					receivedCL = TcpPacket.CreateLobbyPacket.parseFrom(serverOutput);
 					lobbyId = receivedCL.getLobbyId();
+				}else if (toggleGroupValue.equals("joinLobbyRb")) {
+					lobbyId = lobbyIdTextField.getText();
 				}
 				
 		        String username = usernameTextfield.getText();
-	
 		        Player newPlayer = Player.newBuilder()
 						.setName(username)
 						.build();
@@ -151,13 +161,9 @@ public class UserController implements Initializable {
 				if (receivedPacket.getType() == PacketType.CONNECT){
 					receivedC = TcpPacket.ConnectPacket.parseFrom(serverOutput);
 					if (receivedC.isInitialized()){
-						FXMLLoader fmxlLoader = new FXMLLoader(getClass().getClassLoader().getResource("ChatView.fxml"));
-				        Parent window = (Pane) fmxlLoader.load();
-				        con = fmxlLoader.<ChatController>getController();
-				        con.setLobby(lobbyId);
-				        this.scene = new Scene(window);
-				        this.showScene();
-				        Tcp listener = new Tcp(username, clientSocket, outputStream, inputStream, newPlayer, con);
+//						main application will be modifying the scene in openChat
+				        application.setIsAuth(true);
+				        application.openChat(receivedC, username, clientSocket, outputStream, inputStream, newPlayer, lobbyId);				        
 					}else{
 						lobbyIdLabelFielderr1.setVisible(false);
 						lobbyIdLabelFielderr2.setVisible(true);
@@ -215,7 +221,6 @@ public class UserController implements Initializable {
             stage.setMinWidth(1000);
             stage.setMinHeight(620);
             stage.centerOnScreen();
-            con.setUsernameLabel(usernameTextfield.getText());
         });
     }
 
@@ -238,7 +243,6 @@ public class UserController implements Initializable {
         borderPane.setOnMouseReleased(event -> {
             borderPane.setCursor(Cursor.DEFAULT);
         });
-
     }
 
     /* Terminates Application */

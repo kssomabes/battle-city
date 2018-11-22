@@ -36,8 +36,10 @@ import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
 import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
 import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
+import java.util.ResourceBundle;
+import java.net.URL;
 
-public class ChatController {
+public class ChatController extends Pane implements Initializable{
 	@FXML private TextArea messageBox;
     @FXML private Label usernameLabel;
     @FXML private Label onlineCountLabel;
@@ -47,6 +49,27 @@ public class ChatController {
     @FXML ListView chatPane;
     @FXML BorderPane borderPane;
     
+    Main application;
+    Tcp tcp; 
+    
+    String username = "";
+    String lobbyId = "";
+    
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {}
+    
+    public void setApp(Main application) {
+    	this.application = application;
+    	this.username = application.username; 
+    	this.lobbyId = application.lobbyId;
+    	this.tcp = new Tcp(username, application.getConnection(), 
+				application.getOutputStream(), 
+				application.getInputStream(), 
+				application.getPlayer(), 
+				this);
+    	setUsernameLabel(this.username);
+    	setLobby(this.lobbyId);
+    }
     public void setUsernameLabel(String username) {
         this.usernameLabel.setText(username);
     }
@@ -84,8 +107,16 @@ public class ChatController {
     
     @FXML
     public void closeApplication() {
-        Platform.exit();
-        System.exit(0);
+    	try {
+    		application.getInputStream().close();
+    		application.getOutputStream().close();
+    		application.getConnection().close();
+            Platform.exit();
+            System.exit(0);
+    	}catch(IOException e) {
+    		e.printStackTrace();
+    	}
+		
     }
     
     public synchronized void addToChat(ChatPacket msg) {
