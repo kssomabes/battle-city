@@ -107,17 +107,6 @@ public class UserController extends Pane implements Initializable {
 				clientSocket = new Socket("202.92.144.45", 80);
 				outputStream = clientSocket.getOutputStream();
 				inputStream = new DataInputStream(clientSocket.getInputStream());
-<<<<<<< HEAD
-				
-=======
-				int createLobby = 0;
-				String lobbyId = lobbyIdTextField.getText();
-				int numPlayers = 1;
-				if(playerNumberTextField.getText().length() > 0) {
-					numPlayers = Integer.parseInt(playerNumberTextField.getText());
-				}
-
->>>>>>> refs/heads/game-frame-board-master-test
 				CreateLobbyPacket receivedCL = null;
 				ConnectPacket connectPacket = null;
 				ConnectPacket receivedC = null;
@@ -171,20 +160,9 @@ public class UserController extends Pane implements Initializable {
 				if (receivedPacket.getType() == PacketType.CONNECT){
 					receivedC = TcpPacket.ConnectPacket.parseFrom(serverOutput);
 					if (receivedC.isInitialized()){
-<<<<<<< HEAD
 //						main application will be modifying the scene in openChat
 				        application.setIsAuth(true);
 				        application.openChat(receivedC, username, clientSocket, outputStream, inputStream, newPlayer, lobbyId);				        
-=======
-						FXMLLoader fmxlLoader = new FXMLLoader(getClass().getClassLoader().getResource("ChatView.fxml"));
-				        Parent window = (Pane) fmxlLoader.load();
-				        con = fmxlLoader.<ChatController>getController();
-				        con.setLobby(lobbyId);
-				        con.setGame();
-				        this.scene = new Scene(window);
-				        this.showScene();
-				        Tcp listener = new Tcp(username, clientSocket, outputStream, inputStream, newPlayer, con);
->>>>>>> refs/heads/game-frame-board-master-test
 					}else{
 						lobbyIdLabelFielderr1.setVisible(false);
 						lobbyIdLabelFielderr2.setVisible(true);
