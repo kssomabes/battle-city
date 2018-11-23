@@ -2,6 +2,7 @@ package battlecity;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +19,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+
 import java.io.BufferedReader;
 import java.io.OutputStream;
 import java.io.InputStream;
@@ -54,8 +58,22 @@ public class Main extends Application {
 	    public void start(Stage primaryStage) throws Exception {
 	        primaryStageObj = primaryStage;
 	        
-	        addCells();
-	        gameBoard.getChildren().add(board);
+	        GameController gameController = new GameController();
+			SwingNode swingNode = new SwingNode();
+
+	        SwingUtilities.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	            	gameController.setLayout(null);
+	            	gameController.setSize(750, 750);
+	                swingNode.setContent(gameController);
+	            }
+	        });
+	        
+	        
+//	        addCells();
+//	        gameBoard.getChildren().add(board);
+	        gameBoard.getChildren().add(swingNode);
 	        
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
 	        primaryStage.setTitle("Battle City");
