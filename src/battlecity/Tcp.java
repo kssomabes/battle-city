@@ -119,4 +119,13 @@ public class Tcp implements Runnable{
 		}
 	}
 	
+	public void closeStream() {
+		try {
+			inputStream.close();
+			outputStream.close();
+			thread.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -5,44 +5,36 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Popup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import battlecity.Game;
 import javafx.scene.Group;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import java.io.BufferedReader;
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;import javafx.fxml.Initializable;
+import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import proto.TcpPacketProtos.TcpPacket.*;
 import proto.PlayerProtos.Player;
 import java.net.Socket;
-public class Main extends Application {
-    private final List<PropertyChangeListener> listeners = new ArrayList<>();
+public class Main extends Application	 {
     private static Stage primaryStageObj;
     
     private HBox root = new HBox(2);
 
     Pane gameBoard = new Pane(); // holds the whole pane for board
     Group board = new Group();
-    Game game = new Game();
-	Terrain[][] cells = game.getMap().getTerrain();;
+    Game game;
+//	Terrain[][] cells = game.getMap().getTerrain();
 	boolean isAuth = false;
 	
 	ConnectPacket established;
@@ -70,9 +62,6 @@ public class Main extends Application {
 	            }
 	        });
 	        
-	        
-//	        addCells();
-//	        gameBoard.getChildren().add(board);
 	        gameBoard.getChildren().add(swingNode);
 	        
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
@@ -116,18 +105,20 @@ public class Main extends Application {
 		try {
 			chatCont = (ChatController) replaceSceneContent("ChatView.fxml");
 			chatCont.setApp(this);
+//			This will initialize Tcp Chat
+//			Also initialize game server
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void addCells() {
-		for (int i=0; i < cells.length; i++) {
-        	for (int j=0; j < cells.length; j++) {
-            	board.getChildren().add(cells[i][j].imgview);
-        	}
-        }
-	}
+//	public void addCells() {
+//		for (int i=0; i < cells.length; i++) {
+//        	for (int j=0; j < cells.length; j++) {
+//            	board.getChildren().add(cells[i][j].imgview);
+//        	}
+//        }
+//	}
 
 //	For replacing FXML
 	private Initializable replaceSceneContent(String fxml) throws Exception {
@@ -145,7 +136,9 @@ public class Main extends Application {
         root.getChildren().clear(); // getChildren().removeAll() does not work in HBox
         
         if (fxml.equals("ChatView.fxml")) {        	
-        	root.getChildren().addAll(gameBoard, page);
+        	root.getChildren().add(page);
+//        	Load board when the number of players is met 
+        	root.getChildren().add(gameBoard);
         }else {
         	root.getChildren().add(page);
         }

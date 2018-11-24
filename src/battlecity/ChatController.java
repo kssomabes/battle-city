@@ -120,6 +120,7 @@ public class ChatController extends Pane implements Initializable{
     		application.getInputStream().close();
     		application.getOutputStream().close();
     		application.getConnection().close();
+    		tcp.closeStream();
             Platform.exit();
             System.exit(0);
     	}catch(IOException e) {
