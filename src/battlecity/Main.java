@@ -63,6 +63,7 @@ public class Main extends Application	 {
 	        });
 	        
 	        gameBoard.getChildren().add(swingNode);
+	        gameController.init();
 	        
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
 	        primaryStage.setTitle("Battle City");
