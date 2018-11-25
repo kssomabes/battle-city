@@ -1,18 +1,9 @@
 package battlecity;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import battlecity.Main;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -21,29 +12,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 
-import proto.PlayerProtos.Player;
-import proto.TcpPacketProtos.TcpPacket;
 import proto.TcpPacketProtos.TcpPacket.ChatPacket;
-import proto.TcpPacketProtos.TcpPacket.ConnectPacket;
-import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
-import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
-import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
-import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
 import java.util.ResourceBundle;
 import java.net.URL;
@@ -56,7 +31,7 @@ public class ChatController extends Pane implements Initializable{
     @FXML private Label lobbyLabel;
     
     @FXML ListView chatPane;
-    @FXML BorderPane borderPane;
+//    @FXML BorderPane borderPane;
     
     Main application;
     Tcp tcp; 
@@ -200,17 +175,5 @@ public class ChatController extends Pane implements Initializable{
         t.setDaemon(true);
         t.start();
     }
-    
-    public void setGame() {
-    	GameController gameController = new GameController();
-		SwingNode swingNode = new SwingNode();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                swingNode.setContent(gameController);
-            }
-        });
-        borderPane.setCenter(swingNode);
-    }
+ 
 }

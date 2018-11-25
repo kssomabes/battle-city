@@ -3,7 +3,6 @@ package battlecity;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -13,11 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import battlecity.Game;
 import javafx.scene.Group;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.SwingUtilities;
-
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.DataInputStream;
@@ -45,24 +40,11 @@ public class Main extends Application	 {
 	DataInputStream inputStream; 
 	OutputStream outputStream;
 	ChatController chatCont;
+	GameController gameController; 
 	
 	 @Override
 	    public void start(Stage primaryStage) throws Exception {
 	        primaryStageObj = primaryStage;
-	        
-	        GameController gameController = new GameController();
-			SwingNode swingNode = new SwingNode();
-
-	        SwingUtilities.invokeLater(new Runnable() {
-	            @Override
-	            public void run() {
-	            	gameController.setLayout(null);
-	            	gameController.setSize(750, 750);
-	                swingNode.setContent(gameController);
-	            }
-	        });
-	        
-	        gameBoard.getChildren().add(swingNode);
 	        
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
 	        primaryStage.setTitle("Battle City");
@@ -136,9 +118,31 @@ public class Main extends Application	 {
         root.getChildren().clear(); // getChildren().removeAll() does not work in HBox
         
         if (fxml.equals("ChatView.fxml")) {        	
-        	root.getChildren().add(page);
 //        	Load board when the number of players is met 
-        	root.getChildren().add(gameBoard);
+//        	game controller also connects to UDP
+        	this.gameController = new GameController(this.username);
+			SwingNode swingNode = new SwingNode();
+
+	        SwingUtilities.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	            	gameController.setLayout(null);
+	            	gameController.setSize(750, 750);
+	                swingNode.setContent(gameController);
+	            }
+	        });
+	        
+	        gameBoard.getChildren().add(swingNode);
+	        System.out.println("The lobby ID is " + this.lobbyId);
+	        while (true) {
+	        	Thread.sleep(1);
+//	        	System.out.println("Waiting for other players...");
+	        	if (gameController.isConnected() && gameController.isStart()) {
+	        		System.out.println("Loading the game window...");
+	        		break;
+	        	}
+	        }
+        	root.getChildren().addAll(gameBoard, page);
         }else {
         	root.getChildren().add(page);
         }

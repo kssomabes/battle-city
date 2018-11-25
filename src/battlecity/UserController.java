@@ -1,55 +1,33 @@
 package battlecity;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Duration;
 import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
 import proto.TcpPacketProtos.TcpPacket.PacketType;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Random;
 import java.util.ResourceBundle;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.Socket;
 
 import proto.PlayerProtos.Player;
 import proto.TcpPacketProtos.TcpPacket;
-import proto.TcpPacketProtos.TcpPacket.ChatPacket;
 import proto.TcpPacketProtos.TcpPacket.ConnectPacket;
-import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
-import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
 import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
-import proto.TcpPacketProtos.TcpPacket.PacketType;
-import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
 
 public class UserController extends Pane implements Initializable {
     @FXML private ImageView Defaultview;

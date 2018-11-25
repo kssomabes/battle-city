@@ -1,11 +1,6 @@
 package battlecity;
 
 import javafx.scene.image.*;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-
-import java.awt.image.BufferedImage;
 
 public class Terrain {
 //	Constants for possible Terrain Types
