@@ -201,16 +201,16 @@ public class ChatController extends Pane implements Initializable{
         t.start();
     }
     
-    public void setGame() {
-    	GameController gameController = new GameController();
-		SwingNode swingNode = new SwingNode();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                swingNode.setContent(gameController);
-            }
-        });
-        borderPane.setCenter(swingNode);
-    }
+//    public void setGame() {
+//    	GameController gameController = new GameController();
+//		SwingNode swingNode = new SwingNode();
+//
+//        SwingUtilities.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                swingNode.setContent(gameController);
+//            }
+//        });
+//        borderPane.setCenter(swingNode);
+//    }
 }
