@@ -97,7 +97,7 @@ public class GameObject {
     }
 
     public void bounce(int speed) {  // May bug, di ko alam kung bakit iyun yung nangyayari
-        System.out.println("direction = " + direction);
+//        System.out.println("direction = " + direction);
         if (direction == UP) {
             goDown(speed);
             goDown(speed);
