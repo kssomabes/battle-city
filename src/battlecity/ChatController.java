@@ -175,5 +175,4 @@ public class ChatController extends Pane implements Initializable{
         t.setDaemon(true);
         t.start();
     }
- 
 }
