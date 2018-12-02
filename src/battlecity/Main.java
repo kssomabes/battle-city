@@ -54,171 +54,12 @@ public class Main extends Application	 {
 	OutputStream outputStream;
 	ChatController chatCont;
 	GameController gameController; 
-	
-	
-	private List<GameObject> bullets = new ArrayList<>();
-    private List<GameObject> blocks = new ArrayList<>();
-    private List<GameObject> powerUps = new ArrayList<>();
-
-    private GameObject player;
-	
-	
-	private void createContent() {
-//        root = new Pane();
-//        root.setPrefSize(750, 750);
-
-		gameBoard = new Pane();
-
-        player = new GamePlayer();
-        player.setPosition(new Point2D(0, 0));
-
-        // Load Map
-        loadMap();
-
-        // Adds Player
-        addGameObject(player, 50, 50);
-
-        AnimationTimer timer = new AnimationTimer(){
-
-            @Override
-            public void handle(long now) {
-                onUpdate();
-            }
-        };
-        timer.start();
-
-//        return gameBoard;
-    }
-
-    public void loadMap() {
-    	String path = "src/battlecity/Map.txt";
-//    	FileReader a = new FileReader(path);
-//        try (BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResourceAsStream("Map.txt")))) {
-    	try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-			String sCurrentLine;
-            int y = 0;
-			while ((sCurrentLine = br.readLine()) != null) {
-                for (int i = 0; i < sCurrentLine.length(); i++) {
-                    if(sCurrentLine.charAt(i) == 'B') {
-                        addBlock(new Block(), i*25, y);
-                    }
-                }
-                y += 25;
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
-
-    public void addBullet(GameObject bullet, double x, double y) {
-        bullets.add(bullet);
-        addGameObject(bullet, x, y);
-    }
-
-    public void addBlock(GameObject block, double x, double y) {
-        blocks.add(block);
-        addGameObject(block, x, y);
-    }
-
-    public void addPowerUp(GameObject powerUp, double x, double y) {
-        powerUps.add(powerUp);
-        addGameObject(powerUp, x, y);
-    }
-
-    private void addGameObject(GameObject object, double x, double y) {
-        object.getView().setTranslateX(x);
-        object.getView().setTranslateY(y);
-        gameBoard.getChildren().add(object.getView());
-    }
-
-    private void onUpdate() {   // Collision detection
-        for (GameObject bullet : bullets) { // Hindi ko alam ahh, baka isang loop lang ang kailangan nilang lahat???
-            for (GameObject block : blocks) {
-                if (bullet.isColliding(block)) {
-                    bullet.setAlive(false);
-
-                    gameBoard.getChildren().removeAll(bullet.getView());
-                }
-            }
-        }
-
-        for (GameObject block : blocks) {   // May bug pa ito di ko alam kung pano huhu :(
-            if (player.isColliding(block)) {	// Yung bug pala ay kapag nag-collide yung player sa dalawang blocks na magkasabay
-                player.bounce(1);
-            }
-        }
-
-        for (GameObject powerUp : powerUps) {
-            for (GameObject block : blocks) {
-                if (powerUp.isColliding(block)) {   // Para hindi mag-spawn yung powerup sa loob ng isang block/wall/terrain
-                    powerUp.setAlive(false);
-
-                    gameBoard.getChildren().removeAll(powerUp.getView());
-                }
-                if(player.isColliding(powerUp)) {   // Player gets powerup  // Okay, may bug din ito, idk
-                    player.setPower();
-                    powerUp.setAlive(false);
-
-                    gameBoard.getChildren().removeAll(powerUp.getView());
-                }
-            }
-            powerUp.updateTimeToLive();
-            if(powerUp.getTimeToLive() <= 0) {
-                powerUp.setAlive(false);
-
-                gameBoard.getChildren().removeAll(powerUp.getView());
-            }
-        }
-
-        bullets.removeIf(GameObject::isDead);
-        blocks.removeIf(GameObject::isDead);
-        powerUps.removeIf(GameObject::isDead);
-
-        bullets.forEach(GameObject::update);
-        blocks.forEach(GameObject::update);
-        powerUps.forEach(GameObject::update);
-
-        player.diminishPower();
-        player.update();
-        if(Math.random() < 0.001) { // powerup randomly spawn
-            addPowerUp(new PowerUp(), Math.random()*750, Math.random()*750);
-        }
-    }
 
 	 @Override
 	    public void start(Stage primaryStage) throws Exception {
 	        primaryStageObj = primaryStage;
 
-	        createContent();
 //	        primaryStage.setScene(new Scene(gameBoard));
-	        gameBoard.setOnKeyPressed(e -> {
-	            if(e.getCode() == KeyCode.UP) {
-	                player.goUp(1);
-	            } else if(e.getCode() == KeyCode.DOWN) {
-	                player.goDown(1);
-	            } else if(e.getCode() == KeyCode.LEFT) {
-	                player.goLeft(1);
-	            } else if(e.getCode() == KeyCode.RIGHT) {
-	                player.goRight(1);
-	            } else if(e.getCode() == KeyCode.SPACE) {
-	                Bullet bullet = new Bullet();
-	                int UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4;
-	                // bullet.setPosition(player.getPosition().normalize().multiply(2)); // Speed of bullet
-	                bullet.setPosition(player.getPosition());
-	                if(player.getLastDirection() == UP) {
-	                    bullet.goUp(5);
-	                } else if(player.getLastDirection() == DOWN) {
-	                    bullet.goDown(5);
-	                } else if(player.getLastDirection() == LEFT) {
-	                    bullet.goLeft(5);
-	                } else if(player.getLastDirection() == RIGHT) {
-	                    bullet.goRight(5);
-	                }
-	                addBullet(bullet, player.getView().getTranslateX()+5, player.getView().getTranslateY()+5);  // Bullet spawns at the center of the player
-	            }
-	        });
-	        gameBoard.setFocusTraversable(true);
 //	        gameBoard.requestFocus();	// lol para saan ito?
 //	        stage.show();
 	        
@@ -303,38 +144,29 @@ public class Main extends Application	 {
         if (fxml.equals("ChatView.fxml")) {        	
 //        	Load board when the number of players is met 
 //        	game controller also connects to UDP
-//        	this.gameController = new GameController(this.username);
-//			SwingNode swingNode = new SwingNode();
-//
-//	        SwingUtilities.invokeLater(new Runnable() {
-//	            @Override
-//	            public void run() {
-//	            	gameController.setLayout(null);
-//	            	gameController.setSize(750, 750);
-//	                swingNode.setContent(gameController);
-//	            }
-//	        });
-//	        
-//	        gameBoard.getChildren().add(swingNode);
-//	        System.out.println("The lobby ID is " + this.lobbyId);
-//	        while (true) {
-//	        	Thread.sleep(1);
-////	        	System.out.println("Waiting for other players...");
-//	        	if (gameController.isConnected() && gameController.isStart()) {
-//	        		System.out.println("Loading the game window...");
-//	        		break;
-//	        	}
-//	        }
-        	gameBoard.setOnMouseClicked(new EventHandler<MouseEvent>(){
+        	this.gameController = new GameController(this.username);
+        	gameController.setOnMouseClicked(new EventHandler<MouseEvent>(){
 
                 @Override
                 public void handle(MouseEvent arg0) {
-                	gameBoard.requestFocus();
+                	gameController.requestFocus();
                 }
 
             });
 
-        	root.getChildren().addAll(page,gameBoard);
+//        	COMMENT THE WHILE LOOP TO DISABLE UDP WAITING OF PLAYERS
+//			TODO improve showing of lobby id 
+	        System.out.println("The lobby ID is " + this.lobbyId);
+	        while (true) {
+	        	Thread.sleep(1);
+//	        	System.out.println("Waiting for other players...");
+	        	if (gameController.udpIsConnected() && gameController.isStart()) {
+	        		System.out.println("Loading the game window...");
+	        		break;
+	        	}
+	        }
+
+        	root.getChildren().addAll(page, gameController);
         }else {
         	root.getChildren().add(page);
         }
