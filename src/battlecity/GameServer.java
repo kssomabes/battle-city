@@ -67,8 +67,8 @@ public class GameServer implements Runnable, Constants{
 						// Check if it is really a new user
 						if (updated){
 							this.currentNum++;
-							System.out.println("Sending CONNECTED " + tokens[1]);	
-							broadcast("CONNECTED " + tokens[1]);
+							System.out.println("Sending CONNECTED " + tokens[1] + " " + player.getCoordinates());	
+							broadcast("CONNECTED " + tokens[1] + " " + player.getCoordinates());
 						}
 						System.out.println(this.currentNum);
 						// Check if the required number of players has been met
@@ -108,6 +108,14 @@ public class GameServer implements Runnable, Constants{
 							System.out.println("Sending DISCONNECTED " + tokens[1]);
 							broadcast("DISCONNECTED " + tokens[1]);
 						}
+					}else if (receivedDataString.startsWith("PLAYER")) {
+//						Format: PLAYER <name> <x> <y>
+						String [] playerInfo = receivedDataString.split(" ");
+						String pname = playerInfo[1];
+						double x = Double.parseDouble(playerInfo[2].trim());
+						double y = Double.parseDouble(playerInfo[3].trim());
+						NetPlayer player = (NetPlayer) this.game.getPlayers().get(pname);					  
+						player.setCoordinates(x, y);
 					}
 					break;
 				case GAME_END:
@@ -138,7 +146,13 @@ public class GameServer implements Runnable, Constants{
 			e.printStackTrace();
 		}
 	}
+	
+	public void spawnPosition() {
+//		Limit number of players for the game
+//		Depending on the map, give the four coordinates of the spawn positions
 
+	}
+	
 	public static void main(String[] args){
 		try {
 			new GameServer(Integer.parseInt(args[0]));

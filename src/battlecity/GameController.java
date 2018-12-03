@@ -24,7 +24,7 @@ import java.util.List;
 public class GameController extends Pane implements Constants, Runnable, KeyListener{
 
 	Terrain[][] cells;
-	int x, y;
+	double x, y;
 	String serverData;
 	String playerName;
 	DatagramSocket socket = new DatagramSocket();
@@ -41,14 +41,10 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 //	Add throws Exception to handle socket exception
 	public GameController(String name) throws Exception{
 //		Add the GUI stuff here
-		createContent();
-		addKeyListeners();
-		
+		addKeyListeners(); 
         this.setFocusTraversable(true);
 		this.playerName = name;
         this.setFocusTraversable(true);
-        x = 100;
-        y = 100;
 		socket.setSoTimeout(4000);
         thread = new Thread(this);
         thread.start();
@@ -63,7 +59,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
         loadMap();
 
         // Adds Player
-        addGameObject(player, 50, 50);
+        addGameObject(player, this.x, this.y);
 
         AnimationTimer timer = new AnimationTimer(){
 
@@ -226,9 +222,13 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 				System.out.println("serverData " + serverData);
 			}
 			
-			if (!connected && serverData.equals("CONNECTED " + this.playerName)) {
+			if (!connected && serverData.startsWith("CONNECTED " + this.playerName)) {
+//				FORMAT: CONNECTED <name> <initialX> <initialY>
 				this.connected = true; // you have successfully connected
 				System.out.println("You have been connected");
+				String [] playerInfo = serverData.split(" ");
+				this.x = Double.parseDouble(playerInfo[2]);
+				this.y = Double.parseDouble(playerInfo[3]);
 			} else if (!this.connected) {
 				System.out.println("You are trying to connect...");
 				send("CONNECT " + this.playerName);
@@ -236,8 +236,17 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 //				Do something if complete/incomplete or receiving other players' data
 				if (serverData.equals("START")) {
 					System.out.println("Game will start now");
+					createContent();
 					gameStage = GAME_START; 
-				} 
+				} else if (serverData.startsWith("PLAYER")) {
+//					Player info received from server
+//					As of now, catches the movement of the other players
+					String [] playerInfo = serverData.split(" ");
+					System.out.println("Received a player packet while in-game");
+					System.out.println(serverData);
+				} else if (serverData.startsWith("DISCONNECTED")) {
+//					A player disconnected in-game 
+				}
 			}else {
 //				For player movement repainting?
 //				Do something
@@ -260,6 +269,8 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 		}
 	}
 	
+// Send the keyEvent to the server to inform other players
+//	Also send the initial coordinates of the user
 	@Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -274,6 +285,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             y += 10;
         }
+        send("PLAYER " + playerName + " " + this .x + " " + this.y);
     }
 
     @Override
