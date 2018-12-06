@@ -116,7 +116,10 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
                 } else if(player.getLastDirection() == RIGHT) {
                     bullet.goRight(5);
                 }
-                addBullet(bullet, player.getView().getTranslateX()+5, player.getView().getTranslateY()+5);  // Bullet spawns at the center of the player
+                if(player.getCooldown() <= 0) {                	
+                	addBullet(bullet, player.getView().getTranslateX()+5, player.getView().getTranslateY()+5);  // Bullet spawns at the center of the player
+                	player.setCooldown(60);
+                }
             }
             e.consume();
             this.requestFocus();
@@ -197,6 +200,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
         powerUps.forEach(GameObject::update);
 
         player.diminishPower();
+        player.updateCooldown();
         player.update();
         if(Math.random() < 0.001) { // powerup randomly spawn
             addPowerUp(new PowerUp(), Math.random()*750, Math.random()*750);

@@ -19,7 +19,8 @@ public class GameObject {
     private int lastDirection = 1;
     private int direction = 0;
     private int invulnerableTimeLeft = 0;
-    private int timeToLive = 360;
+    private int timeToLive = 360;	// powerup
+    private int cooldown = 0;
 
     private Boolean alive = true;
 
@@ -99,6 +100,18 @@ public class GameObject {
     public void stopTank() {
     	setPosition(new Point2D(0, 0));
     	direction = STOP;
+    }
+    
+    public void setCooldown(int cooldown) {
+        this.cooldown = cooldown;
+    }
+
+    public int getCooldown() {
+        return cooldown;
+    }
+    
+    public void updateCooldown() {
+    	cooldown -= 1;
     }
 
     public void bounce(int speed) {  // May bug, di ko alam kung bakit iyun yung nangyayari
