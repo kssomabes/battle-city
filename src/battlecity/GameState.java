@@ -3,6 +3,7 @@ package battlecity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Iterator;
 import javafx.geometry.Point2D;
 
 public class GameState{
@@ -31,6 +32,11 @@ public class GameState{
 		return false;
 	}
 	
+//	For updating the game state
+	public void update(String name, NetPlayer netp) {
+		players.put(name, netp); // updates key-value pair name with netp
+	} 
+	
 	public boolean removePlayer(String name) {
 		Object y = players.get(name);
 		if (y != null) {
@@ -55,6 +61,17 @@ public class GameState{
 		spawnPoints.remove(index);
 		return cnv;
 	}
+	
+	// As of now only passes the player information
+		public String toString(){
+			String retval = "";
+			for(Iterator ite = players.keySet().iterator(); ite.hasNext();){
+				String name = (String)ite.next();
+				NetPlayer player = (NetPlayer) players.get(name);
+				retval += player.toString() + ":";
+			}
+			return retval;
+		}
 	
 	public Map getPlayers(){
 		return players;

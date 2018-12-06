@@ -34,4 +34,13 @@ public class NetPlayer {
 	public String getCoordinates() {
 		return this.x + " " + this.y;
 	}
+	
+	public String toString() {
+		String retval = "";
+		retval += "PLAYER ";
+		retval += name + " ";
+		retval += x + " ";
+		retval += y;
+		return retval;
+	}
 }

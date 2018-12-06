@@ -37,6 +37,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	Thread thread;
 	int gameStage = WAITING_FOR_PLAYERS; // initial game stage
 
+	private List<GameObject> otherPlayers = new ArrayList<>();
 	private List<GameObject> bullets = new ArrayList<>();
     private List<GameObject> blocks = new ArrayList<>();
     private List<GameObject> powerUps = new ArrayList<>();
@@ -233,6 +234,9 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
         player.diminishPower();
         player.updateCooldown();
+        
+        send("PLAYER " + this.playerName + " " + player.getView().getTranslateX() + " " + player.getView().getTranslateY());
+        
         player.updateplayer(blocks);
         if(Math.random() < 0.001) { // powerup randomly spawn
             addPowerUp(new PowerUp(), Math.random()*750, Math.random()*750);
@@ -276,25 +280,86 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 				System.out.println("You are trying to connect...");
 				send("CONNECT " + this.playerName);
 			} else if (this.connected) {
-//				Do something if complete/incomplete or receiving other players' data
-				if (serverData.equals("START")) {
-					System.out.println("Game will start now");
-					createContent();
-					gameStage = GAME_START; 
-				} else if (serverData.startsWith("PLAYER")) {
-//					Player info received from server
-//					As of now, catches the movement of the other players
-					String [] playerInfo = serverData.split(" ");
-					System.out.println("Received a player packet while in-game");
-					System.out.println(serverData);
-				} else if (serverData.startsWith("DISCONNECTED")) {
-//					A player disconnected in-game 
+				
+				
+				if (gameStage == WAITING_FOR_PLAYERS) {
+					if (serverData.equals("LOADING")) {
+						gameStage = LOADING; 
+					}
+				}else if (gameStage == LOADING) {
+//					START message or IMITIAL PLAYERS LIST
+					if (serverData.startsWith("PLAYER")) {
+						System.out.println("Loading initial player list");
+						String [] playersInfo = serverData.split(":");
+						for (int i=0; i < playersInfo.length; i++){
+	                      // PLAYER name x y
+	                      String[] playerInfo = playersInfo[i].split(" ");
+	                      String pname = playerInfo[1];
+	                      
+	                      if (pname.equals(this.playerName)) { 
+	                    	  System.out.println("Current player here ");
+	                    	  continue;
+	                      }
+	                      System.out.println("Player name: " + pname);
+	                      double x = Double.parseDouble(playerInfo[2]);
+	                      double y = Double.parseDouble(playerInfo[3]);
+	                      
+	                      otherPlayers.clear();
+
+	                      GameObject playerZ = new GamePlayer();
+	                      playerZ.setPosition(new Point2D(x, y));
+
+	                      addGameObject(playerZ, x, y);  
+	                  }
+					} else if (serverData.equals("START")) {
+						gameStage = GAME_START;
+						createContent();
+					}
+				}else if (gameStage == GAME_START) {
+					System.out.println("The game is about to start");
+					gameStage = IN_PROGRESS; 
+				}else if (gameStage == IN_PROGRESS) {
+					if (serverData.startsWith("PLAYER")) {
+						System.out.println("IN PROGRESS: PLAYER");
+//						Player info received from server
+//						As of now, catches the movement of the other players
+						String [] playersInfo = serverData.split(":");
+	                      this.getChildren().removeAll(otherPlayers);
+
+						for (int i=0; i < playersInfo.length; i++){
+	                      // PLAYER name x y
+	                      String[] playerInfo = playersInfo[i].split(" ");
+	                      String pname = playerInfo[1];
+	                      
+	                      if (pname.equals(this.playerName)) continue;
+	                      
+	                      System.out.println(pname); 
+	                      
+	                      double x = Double.parseDouble(playerInfo[2]);
+	                      double y = Double.parseDouble(playerInfo[3]);
+	                      
+	                      otherPlayers.clear();
+
+	                      GameObject playerZ = new GamePlayer();
+	                      playerZ.setPosition(new Point2D(x, y));
+
+	                      addGameObject(playerZ, x, y);  
+	                  }
+					} else if (serverData.startsWith("DISCONNECTED")) {
+//						A player disconnected in-game 
+					}
+				} else {
+//					Other stages not catched yet
+		//				For player movement repainting?
+		//				Do something
+						System.out.println("Something else");
+					} 
 				}
-			}else {
-//				For player movement repainting?
-//				Do something
-				System.out.println("Something else");
-			} 
+//				Do something if complete/incomplete or receiving other players' data
+		}
+
+		if (gameStage != GAME_START) {
+			send("DISCONNECT " + this.playerName);
 		}
 
 		thread.stop();
@@ -328,7 +393,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             y += 10;
         }
-        send("PLAYER " + playerName + " " + this .x + " " + this.y);
+//        send("PLAYER " + playerName + " " + this .x + " " + this.y);
     }
 
     @Override

@@ -73,6 +73,8 @@ public class GameServer implements Runnable, Constants{
 						System.out.println(this.currentNum);
 						// Check if the required number of players has been met
 						if (this.currentNum == this.numPlayers){
+							broadcast("LOADING");
+							broadcast(game.toString()); // initial positions 
 							gameStage = GAME_START;
 						}
 					}else if (receivedDataString.startsWith("DISCONNECT")) {
@@ -100,7 +102,7 @@ public class GameServer implements Runnable, Constants{
 					if (receivedDataString.startsWith("DISCONNECT")) {
 //						A user disconnected even before game starts, broadcast this and decrement number of players
 						String tokens[] = receivedDataString.split(" ");
-//						Update gamestate to remove player
+//						Update gameState to remove player
 						boolean updated = game.removePlayer(tokens[1].trim());
 //						Check if updated
 						if (updated) {
@@ -116,6 +118,12 @@ public class GameServer implements Runnable, Constants{
 						double y = Double.parseDouble(playerInfo[3].trim());
 						NetPlayer player = (NetPlayer) this.game.getPlayers().get(pname);					  
 						player.setCoordinates(x, y);
+						
+						// Since server received a player packet update the game state
+						game.update(pname, player); 
+
+						// Broadcast the updated game state to all the players 
+						broadcast(game.toString());
 					}
 					break;
 				case GAME_END:
