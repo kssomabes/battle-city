@@ -117,8 +117,19 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
                 } else if(player.getLastDirection() == RIGHT) {
                     bullet.goRight(5);
                 }
-                if(player.getCooldown() <= 0) {                	
-                	addBullet(bullet, player.getView().getTranslateX()+5, player.getView().getTranslateY()+5);  // Bullet spawns at the center of the player
+                if(player.getCooldown() <= 0) {                
+                	//get direction para sa harap ng player magi-ispawn yung bullet??? 20x20 yung size ng player
+                	int x = 5, y = 5;	// center of player
+                	if(player.getLastDirection() == UP) {
+                        y = -11;
+                    } else if(player.getLastDirection() == DOWN) {
+                        y = 21;
+                    } else if(player.getLastDirection() == LEFT) {
+                        x = -11;
+                    } else if(player.getLastDirection() == RIGHT) {
+                        x = 21;
+                    }
+                	addBullet(bullet, player.getView().getTranslateX()+x, player.getView().getTranslateY()+y);  // Bullet spawns at the center of the player
                 	player.setCooldown(60);
                 }
             }
