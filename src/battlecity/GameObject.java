@@ -1,5 +1,7 @@
 package battlecity;
 
+import java.util.List;
+
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 
@@ -33,6 +35,46 @@ public class GameObject {
     public void update() {
         view.setTranslateX(view.getTranslateX() + position.getX());
         view.setTranslateY(view.getTranslateY() + position.getY());
+    }
+
+    public void updateplayer(List<GameObject> blocks) {
+    	boolean willCollide = false;
+    	
+    	for (GameObject block : blocks) {
+    		if (block.getView().getTranslateX() >= this.getView().getTranslateX() - 22 && block.getView().getTranslateX() <= this.getView().getTranslateX() + 22) {
+                
+    			if (this.direction == UP){
+	    			if (block.getView().getTranslateY() + 23 >= this.getView().getTranslateY() - 1 && block.getView().getTranslateY() <= this.getView().getTranslateY() - 1) {
+	                	willCollide = true;
+	                	break;
+	                }
+	    		}
+    			if (this.direction == DOWN) {
+	                if (block.getView().getTranslateY() <= this.getView().getTranslateY() + 24 && block.getView().getTranslateY() >= this.getView().getTranslateY() + 24) {
+	                	willCollide = true;
+	                	break;
+	                }
+    			}
+    		}
+    		if (block.getView().getTranslateY() >= this.getView().getTranslateY() - 22 && block.getView().getTranslateY() <= this.getView().getTranslateY() + 22) {
+    			if (this.direction == LEFT){
+	    			if (block.getView().getTranslateX() + 23 >= this.getView().getTranslateX() - 1 && block.getView().getTranslateX() <= this.getView().getTranslateX() - 1) {
+	                	willCollide = true;
+	                	break;
+	                }
+	    		}
+    			if (this.direction == RIGHT) {
+	                if (block.getView().getTranslateX() <= this.getView().getTranslateX() + 24 && block.getView().getTranslateX() >= this.getView().getTranslateX() + 24) {
+	                	willCollide = true;
+	                	break;
+	                }
+    			}
+    		}
+    	}
+    	if (!willCollide) {
+	    	view.setTranslateX(view.getTranslateX() + position.getX());
+	        view.setTranslateY(view.getTranslateY() + position.getY());
+    	}
     }
 
     public void setPosition(Point2D position) {
@@ -127,27 +169,7 @@ public class GameObject {
     public void hit() {
     	life -= 1;
     }
-
-    public void bounce(int speed) {  // May bug, di ko alam kung bakit iyun yung nangyayari
-//        System.out.println("direction = " + direction);
-        if (direction == UP) {
-            goDown(speed);
-            goDown(speed);
-        }
-        else if (direction == DOWN) {
-            goUp(speed);
-            goUp(speed);
-        }
-        else if (direction == LEFT) {
-            goRight(speed);
-            goRight(speed);
-        }
-        else if (direction == RIGHT) {
-            goLeft(speed);
-            goLeft(speed);
-        }
-    }
-
+    
     public void setPower() {
         invulnerableTimeLeft = 180; // Ito yung 3 seconds since 60 fps yung game
     }

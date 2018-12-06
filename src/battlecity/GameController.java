@@ -23,6 +23,11 @@ import java.util.List;
 
 public class GameController extends Pane implements Constants, Runnable, KeyListener{
 
+	private final int UP = 1;
+    private final int DOWN = 2;
+    private final int LEFT = 3;
+    private final int RIGHT = 4;
+    
 	Terrain[][] cells;
 	double x, y;
 	String serverData;
@@ -137,7 +142,18 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
             this.requestFocus();
         });
     	this.setOnKeyReleased(e -> {
-    		player.stopTank();
+    		if (e.getCode() == KeyCode.UP && player.getDirection() == UP) {
+    			player.stopTank();
+    		}
+    		else if (e.getCode() == KeyCode.DOWN && player.getDirection() == DOWN) {
+    			player.stopTank();
+    		}
+    		else if (e.getCode() == KeyCode.LEFT && player.getDirection() == LEFT) {
+    			player.stopTank();
+    		}
+    		else if (e.getCode() == KeyCode.RIGHT && player.getDirection() == RIGHT) {
+    			player.stopTank();
+    		}
     	});
     }
 
@@ -185,13 +201,6 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
             }
         }
 
-        for (GameObject block : blocks) {   // May bug pa ito di ko alam kung pano huhu :(
-            if (player.isColliding(block)) {	// Yung bug pala ay kapag nag-collide yung player sa dalawang blocks na magkasabay
-            	player.bounce(1);
-            	//player.stopTank();
-            }
-        }
-
         for (GameObject powerUp : powerUps) {
             for (GameObject block : blocks) {
                 if (powerUp.isColliding(block)) {   // Para hindi mag-spawn yung powerup sa loob ng isang block/wall/terrain
@@ -224,7 +233,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
         player.diminishPower();
         player.updateCooldown();
-        player.update();
+        player.updateplayer(blocks);
         if(Math.random() < 0.001) { // powerup randomly spawn
             addPowerUp(new PowerUp(), Math.random()*750, Math.random()*750);
         }
