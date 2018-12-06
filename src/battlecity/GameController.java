@@ -118,7 +118,12 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
                 }
                 addBullet(bullet, player.getView().getTranslateX()+5, player.getView().getTranslateY()+5);  // Bullet spawns at the center of the player
             }
+            e.consume();
+            this.requestFocus();
         });
+    	this.setOnKeyReleased(e -> {
+    		player.stopTank();
+    	});
     }
 
     public void addBullet(GameObject bullet, double x, double y) {
@@ -149,13 +154,15 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
                     bullet.setAlive(false);
 
                     this.getChildren().removeAll(bullet.getView());
+                    this.requestFocus();
                 }
             }
         }
 
         for (GameObject block : blocks) {   // May bug pa ito di ko alam kung pano huhu :(
             if (player.isColliding(block)) {	// Yung bug pala ay kapag nag-collide yung player sa dalawang blocks na magkasabay
-                player.bounce(1);
+            	player.bounce(1);
+            	//player.stopTank();
             }
         }
 

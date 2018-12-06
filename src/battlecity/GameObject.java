@@ -95,6 +95,11 @@ public class GameObject {
         direction = RIGHT;
         lastDirection = RIGHT;
     }
+    
+    public void stopTank() {
+    	setPosition(new Point2D(0, 0));
+    	direction = STOP;
+    }
 
     public void bounce(int speed) {  // May bug, di ko alam kung bakit iyun yung nangyayari
 //        System.out.println("direction = " + direction);
