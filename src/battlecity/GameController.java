@@ -54,6 +54,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 		player = new GamePlayer();
         player.setPosition(new Point2D(0, 0));
+        player.setLife(5);
 
         // Load Map
         loadMap();
@@ -159,6 +160,17 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
                     this.getChildren().removeAll(bullet.getView());
                     this.requestFocus();
                 }
+            }
+            if(bullet.isColliding(player)) {
+                bullet.setAlive(false);
+                player.hit();
+                if(player.getLife() <= 0) {
+                	player.setAlive(false);
+                	this.getChildren().removeAll(player.getView());
+                }
+
+                this.getChildren().removeAll(bullet.getView());
+                this.requestFocus();
             }
         }
 

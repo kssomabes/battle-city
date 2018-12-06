@@ -21,6 +21,8 @@ public class GameObject {
     private int invulnerableTimeLeft = 0;
     private int timeToLive = 360;	// powerup
     private int cooldown = 0;
+    private int life = 0;
+    private int damage = 1;
 
     private Boolean alive = true;
 
@@ -112,6 +114,18 @@ public class GameObject {
     
     public void updateCooldown() {
     	cooldown -= 1;
+    }
+    
+    public void setLife(int life) {
+        this.life = life;
+    }
+
+    public int getLife() {
+        return life;
+    }
+    
+    public void hit() {
+    	life -= 1;
     }
 
     public void bounce(int speed) {  // May bug, di ko alam kung bakit iyun yung nangyayari
