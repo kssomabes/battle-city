@@ -48,7 +48,7 @@ public class GameServer implements Runnable, Constants{
 			receivedDataString = new String(buf);
 //			remove excess bytes 
 			receivedDataString = receivedDataString.trim();
-			if (receivedDataString.length() > 0) System.out.println("Server received: " + receivedDataString);
+//			if (receivedDataString.length() > 0) System.out.println("Server received: " + receivedDataString);
 
 //			Handle received data
 //			if (receivedDataString.length() == 0) continue; // continue if empty, removed due to switch-case issue

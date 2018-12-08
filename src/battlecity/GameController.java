@@ -11,7 +11,10 @@ import java.io.IOException;
 import javax.swing.JPanel;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import java.net.InetAddress;
@@ -178,6 +181,31 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
         object.getView().setTranslateY(y);
         this.getChildren().add(object.getView());
     }
+    
+    private void addGameObject(GameObject object, double x, double y, String playerid) {
+        object.getView().setTranslateX(x);
+        object.getView().setTranslateY(y);
+        object.getView().setId(playerid);
+        this.getChildren().add(object.getView());
+        
+    }
+    
+    private void setGameObject(double x, double y, String playerid) {
+        final ObservableList<Node> children = this.getChildren();
+        final String playername = new String(playerid);
+        for (Node node : children) {
+        	if (node.getId().equals(playername)) {
+        		Platform.runLater(new Runnable() {
+        			@Override public void run() {
+	        		node.setTranslateX(x);
+	        		node.setTranslateY(y);
+        			}
+        		});
+                break;
+        	}
+        }
+
+    }
 
     private void onUpdate() {   // Collision detection
         for (GameObject bullet : bullets) { // Hindi ko alam ahh, baka isang loop lang ang kailangan nilang lahat???
@@ -266,7 +294,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 			serverData = serverData.trim();
 
 			if (serverData.length() > 0) {
-				System.out.println("serverData " + serverData);
+				//System.out.println("serverData " + serverData);
 			}
 			
 			if (!connected && serverData.startsWith("CONNECTED " + this.playerName)) {
@@ -309,7 +337,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	                      GameObject playerZ = new GamePlayer();
 	                      playerZ.setPosition(new Point2D(x, y));
 
-	                      addGameObject(playerZ, x, y);  
+	                      addGameObject(playerZ, x, y, pname);  
 	                  }
 					} else if (serverData.equals("START")) {
 						gameStage = GAME_START;
@@ -320,7 +348,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 					gameStage = IN_PROGRESS; 
 				}else if (gameStage == IN_PROGRESS) {
 					if (serverData.startsWith("PLAYER")) {
-						System.out.println("IN PROGRESS: PLAYER");
+						//System.out.println("IN PROGRESS: PLAYER");
 //						Player info received from server
 //						As of now, catches the movement of the other players
 						String [] playersInfo = serverData.split(":");
@@ -333,17 +361,15 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	                      
 	                      if (pname.equals(this.playerName)) continue;
 	                      
-	                      System.out.println(pname); 
+	                      //System.out.println(pname); 
 	                      
 	                      double x = Double.parseDouble(playerInfo[2]);
 	                      double y = Double.parseDouble(playerInfo[3]);
 	                      
-	                      otherPlayers.clear();
+	                      //otherPlayers.clear();
 
-	                      GameObject playerZ = new GamePlayer();
-	                      playerZ.setPosition(new Point2D(x, y));
-
-	                      addGameObject(playerZ, x, y);  
+	                      //addGameObject(playerZ, x, y);
+	                      setGameObject(x, y, pname);
 	                  }
 					} else if (serverData.startsWith("DISCONNECTED")) {
 //						A player disconnected in-game 
