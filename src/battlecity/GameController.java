@@ -145,7 +145,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 							playerName + '_' + bulletsfired); // Bullet spawns at the center of the player
 					double xbullet = player.getView().getTranslateX() + x;
 					double ybullet = player.getView().getTranslateY() + y;
-					send("CREATEBULLET:" + playerName + "_" + bulletsfired + ":" + xbullet + ":" + ybullet);
+					send("CREATEBULLET:" + playerName + "_" + bulletsfired + ":" + xbullet + ":" + ybullet + ":" + player.getLastDirection());
 					player.setCooldown(60);
 					bulletsfired++;
 				}
@@ -203,19 +203,25 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	private void setGameObject(double x, double y, String ID) {
 		final ObservableList<Node> children = this.getChildren();
 		final String id = new String(ID);
-		for (Node node : children) {
-			if (node.getId() != null) {
-				if (node.getId().equals(id)) {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							node.setTranslateX(x);
-							node.setTranslateY(y);
-						}
-					});
-					break;
+		try {
+			for (Node node : children) {
+				if (node.getId() != null) {
+					if (node.getId().equals(id)) {
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								node.setTranslateX(x);
+								node.setTranslateY(y);
+							}
+						});
+						break;
+					}
 				}
 			}
+		}
+		catch(Exception e) {
+			System.out.println("Delay. Retrying");
+			setGameObject(x, y, ID);
 		}
 
 	}
@@ -251,12 +257,21 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 					this.getChildren().removeAll(powerUp.getView());
 				}
-				if (player.isColliding(powerUp)) { // Player gets powerup // Okay, may bug din ito, idk
-					player.setPower();
+				
+			}
+			for (GameObject playerz : otherPlayers) {
+				if (playerz.isColliding(powerUp)) {
+					playerz.setPower();
 					powerUp.setAlive(false);
 
 					this.getChildren().removeAll(powerUp.getView());
 				}
+			}
+			if (player.isColliding(powerUp)) {
+				player.setPower();
+				powerUp.setAlive(false);
+
+				this.getChildren().removeAll(powerUp.getView());
 			}
 			powerUp.updateTimeToLive();
 			if (powerUp.getTimeToLive() <= 0) {
@@ -272,7 +287,6 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 		for (GameObject bullet : bullets) {
 			bullet.update();
-			send("BULLET:" + bullet.getView().getId()  + ":" + bullet.getView().getTranslateX() + ":" + bullet.getView().getTranslateY());
 		}
 
 		blocks.forEach(GameObject::update);
@@ -287,7 +301,6 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 		send("PLAYER " + this.playerName + " " + player.getView().getTranslateX() + " "
 				+ player.getView().getTranslateY());
-		//
 		player.updateplayer(blocks);
 	}
 
@@ -352,12 +365,13 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 							double x = Double.parseDouble(playerInfo[2]);
 							double y = Double.parseDouble(playerInfo[3]);
 
-							otherPlayers.clear();
+							//otherPlayers.clear();
 
 							GameObject playerZ = new GamePlayer();
 							playerZ.setPosition(new Point2D(x, y));
 
 							addGameObject(playerZ, x, y, pname);
+							otherPlayers.add(playerZ);
 						}
 					} else if (serverData.equals("START")) {
 						gameStage = GAME_START;
@@ -372,7 +386,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 						// Player info received from server
 						// As of now, catches the movement of the other players
 						String[] playersInfo = serverData.split(":");
-						this.getChildren().removeAll(otherPlayers);
+						//this.getChildren().removeAll(otherPlayers);
 
 						for (int i = 0; i < playersInfo.length; i++) {
 							// PLAYER name x y
@@ -392,21 +406,29 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 							// addGameObject(playerZ, x, y);
 							setGameObject(x, y, pname);
 						}
-					} else if (serverData.startsWith("BULLET")) {
-						String[] objectinfos = serverData.split(":");
-						String id = objectinfos[1];
-						double x = Double.parseDouble(objectinfos[2]);
-						double y = Double.parseDouble(objectinfos[3]);
-						if (!id.split("_")[0].equals(playerName)) {
-							setGameObject(x, y, objectinfos[1]);
-						}
 					} else if (serverData.startsWith("CREATEBULLET")) {
 						String[] objectinfos = serverData.split(":");
 						String id = objectinfos[1];
 						double x = Double.parseDouble(objectinfos[2]);
 						double y = Double.parseDouble(objectinfos[3]);
+						int position = Integer.parseInt(objectinfos[4]);
 						if (!id.split("_")[0].equals(playerName)) {
-							addBullet(new Bullet(), x, y, id);
+							Bullet bullet = new Bullet();
+							int UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4;
+							// bullet.setPosition(player.getPosition().normalize().multiply(2)); // Speed of
+							// bullet
+							//bullet.setPosition(player.getPosition());
+							if (position == UP) {
+								bullet.goUp(5);
+							} else if (position == DOWN) {
+								bullet.goDown(5);
+							} else if (position == LEFT) {
+								bullet.goLeft(5);
+							} else if (position == RIGHT) {
+								bullet.goRight(5);
+							}
+							
+							addBullet(bullet, x, y, id);
 						}
 					} else if (serverData.startsWith("DISCONNECTED")) {
 						// A player disconnected in-game
