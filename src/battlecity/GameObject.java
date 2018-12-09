@@ -1,5 +1,8 @@
 package battlecity;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.List;
 
 import javafx.geometry.Point2D;
@@ -8,7 +11,7 @@ import javafx.scene.Node;
 /**
  * GameObject
  */
-public class GameObject {
+public class GameObject implements Constants {
 
     private Node view;
     private Point2D position = new Point2D(0, 0);
@@ -36,7 +39,7 @@ public class GameObject {
         view.setTranslateX(view.getTranslateX() + position.getX());
         view.setTranslateY(view.getTranslateY() + position.getY());
     }
-
+	
     public void updateplayer(List<GameObject> blocks) {
     	boolean willCollide = false;
     	

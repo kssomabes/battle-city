@@ -31,6 +31,7 @@ public class GameServer implements Runnable, Constants{
 	
 	public void run() {
 		System.out.println("In run!");
+		int powerupsadded = 0;
 		while(true) {
 			try {
 				Thread.sleep(1);
@@ -52,7 +53,12 @@ public class GameServer implements Runnable, Constants{
 
 //			Handle received data
 //			if (receivedDataString.length() == 0) continue; // continue if empty, removed due to switch-case issue
-
+			
+			if(Math.random() < 0.001) { // powerup randomly spawn
+				broadcast("POWERUPS:POWERUP" + powerupsadded + ":" + Math.random()*750 + ":" + Math.random()*750);
+				powerupsadded++;
+			}
+			
 			switch (gameStage) {
 			// TO-DO: Serialization 
 				case WAITING_FOR_PLAYERS:
@@ -124,6 +130,8 @@ public class GameServer implements Runnable, Constants{
 
 						// Broadcast the updated game state to all the players 
 						broadcast(game.toString());
+					}else {
+						broadcast(receivedDataString);
 					}
 					break;
 				case GAME_END:
