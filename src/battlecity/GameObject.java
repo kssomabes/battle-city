@@ -122,6 +122,7 @@ public class GameObject implements Constants {
         if(y==0) direction = STOP;
         direction = UP;
         lastDirection = UP;
+        imgView.setRotate(0); 
     }
 
     public void goDown(int speed) {
@@ -132,6 +133,7 @@ public class GameObject implements Constants {
         if(y==0) direction = STOP;
         direction = DOWN;
         lastDirection = DOWN;
+        imgView.setRotate(180);
     }
 
     public void goLeft(int speed) {
@@ -142,6 +144,7 @@ public class GameObject implements Constants {
         if(x==0) direction = STOP;
         direction = LEFT;
         lastDirection = LEFT;
+        imgView.setRotate(270);
     }
 
     public void goRight(int speed) {
@@ -152,6 +155,7 @@ public class GameObject implements Constants {
         if(x==0) direction = STOP;
         direction = RIGHT;
         lastDirection = RIGHT;
+        imgView.setRotate(90);
     }
     
     public void stopTank() {
