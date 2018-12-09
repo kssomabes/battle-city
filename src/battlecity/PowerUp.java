@@ -8,10 +8,7 @@ import javafx.scene.shape.Rectangle;
 
 public class PowerUp extends GameObject {
     public PowerUp() {
-        super(new Rectangle(20, 20, Color.GREEN));
+        super("helmet1.png", 20, 20);
         super.setTimeToLive(360);   // 360 kasi 60 fps yung game
-        InputStream is = getClass().getClassLoader().getResourceAsStream("helmet1.png");
-        Image img = new Image(is);
-        super.setImageView(img, 20, 20);
     }
 }

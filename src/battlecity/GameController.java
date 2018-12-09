@@ -67,8 +67,6 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 		// Load Map
 		loadMap();
-//		addBlock(new Block(), 0 * 25, 0);
-//		addBlock(new Block(), 1 * 25, 0);
 
 		// Adds Player
 		addGameObject(player, this.x, this.y);

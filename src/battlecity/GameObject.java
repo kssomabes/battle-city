@@ -18,7 +18,6 @@ import javafx.scene.shape.Rectangle;
  */
 public class GameObject implements Constants {
 
-//    private Node imgView;
     private Point2D position = new Point2D(0, 0);
 
     private final int STOP = 0;
@@ -38,14 +37,9 @@ public class GameObject implements Constants {
 
     private Boolean alive = true;
 
-    public GameObject(Rectangle imgView) {
-//    	InputStream is = getClass().getClassLoader().getResourceAsStream("tank_ico.png");
-//    	Image img = new Image(is);
-//    	imgView.setFill(new ImagePattern(img));
-//        this.imgView = imgView;
-    }
-    
-    public void setImageView(Image img, int height, int width) {
+    public GameObject(String imgLocation, int height, int width) {
+    	InputStream is = getClass().getClassLoader().getResourceAsStream(imgLocation);
+		Image img = new Image(is);
         this.imgView = new ImageView(img);
         this.imgView.setFitHeight(height);
         this.imgView.setFitWidth(width);
@@ -103,10 +97,6 @@ public class GameObject implements Constants {
     public Point2D getPosition() {
         return this.position;
     }
-
-//    public Node getView() {
-//        return view;
-//    }
 
     public ImageView getView() {
         return imgView;

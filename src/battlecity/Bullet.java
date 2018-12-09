@@ -8,9 +8,6 @@ import javafx.scene.shape.Rectangle;
 
 public class Bullet extends GameObject {
     public Bullet() {
-        super(new Rectangle(5, 5, Color.BROWN));
-        InputStream is = getClass().getClassLoader().getResourceAsStream("tank_ico.png");
-        Image img = new Image(is);
-        super.setImageView(img, 5, 5);
+        super("tank_ico.png", 5, 5);
     }
 }
