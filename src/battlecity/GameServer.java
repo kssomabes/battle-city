@@ -32,6 +32,7 @@ public class GameServer implements Runnable, Constants{
 	public void run() {
 		System.out.println("In run!");
 		int powerupsadded = 0;
+		int donereset = 0;
 		while(true) {
 			try {
 				Thread.sleep(1);
@@ -94,7 +95,14 @@ public class GameServer implements Runnable, Constants{
 							System.out.println("Sending DISCONNECTED " + tokens[1]);
 							broadcast("DISCONNECTED " + tokens[1]);
 						}
-					}	
+					} else if (receivedDataString.startsWith("RESET")) {
+						if (donereset == 0) { 
+							this.game = new GameState();
+							this.currentNum = 0;
+							game.removeAllPlayer();
+							donereset = 1;
+						}
+					}
 //					else{
 //						System.out.println("Unhandled packet message: " + receivedDataString);
 //					}
@@ -118,18 +126,26 @@ public class GameServer implements Runnable, Constants{
 						}
 					}else if (receivedDataString.startsWith("PLAYER")) {
 //						Format: PLAYER <name> <x> <y>
-						String [] playerInfo = receivedDataString.split(" ");
-						String pname = playerInfo[1];
-						double x = Double.parseDouble(playerInfo[2].trim());
-						double y = Double.parseDouble(playerInfo[3].trim());
-						NetPlayer player = (NetPlayer) this.game.getPlayers().get(pname);					  
-						player.setCoordinates(x, y);
-						
-						// Since server received a player packet update the game state
-						game.update(pname, player); 
-
-						// Broadcast the updated game state to all the players 
-						broadcast(game.toString());
+						if (game.getPlayerCount() > 0) {
+							String [] playerInfo = receivedDataString.split(" ");
+							String pname = playerInfo[1];
+							double x = Double.parseDouble(playerInfo[2].trim());
+							double y = Double.parseDouble(playerInfo[3].trim());
+							NetPlayer player = (NetPlayer) this.game.getPlayers().get(pname);					  
+							player.setCoordinates(x, y);
+							
+							// Since server received a player packet update the game state
+							game.update(pname, player); 
+	
+							// Broadcast the updated game state to all the players 
+							broadcast(game.toString());
+						}
+					}else if (receivedDataString.startsWith("WINNER")) {
+						this.currentNum = 0;
+						//game.removeAllPlayer();
+						broadcast(receivedDataString);
+						gameStage = WAITING_FOR_PLAYERS;
+						donereset = 0;
 					}else {
 						broadcast(receivedDataString);
 					}

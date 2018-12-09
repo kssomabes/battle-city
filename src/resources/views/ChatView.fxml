@@ -68,9 +68,9 @@
    <top>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1200" style="-fx-background-color: #031c30;" BorderPane.alignment="CENTER">
          <center>
-	         <Label fx:id="lobbyLabel" prefHeight="48.0" prefWidth="500.0" text="0" textFill="#036F47">
+	         <Label fx:id="lobbyLabel" prefHeight="48.0" prefWidth="600.0" text="0" textFill="#036F47">
                	<font>
-              		<Font name="SansSerif Regular" size="25.0" />
+              		<Font name="SansSerif Regular" size="23.0" />
             	</font>
            	</Label>
          </center>

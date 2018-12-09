@@ -46,6 +46,13 @@ public class GameState{
 		return false;
 	}
 	
+	public void removeAllPlayer() {
+		players = new HashMap <String, NetPlayer>();
+	}
+	public int getPlayerCount() {
+		return players.size();
+	}
+	
 // TODO catch if the maximum number of players has been met
 	public Point2D spawnPlayer() {
 		Integer index = -1;

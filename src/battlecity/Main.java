@@ -6,15 +6,20 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 //import battlecity.Game;
 import javafx.scene.Group;
 import javafx.scene.Parent;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
@@ -31,6 +36,7 @@ import java.io.IOException;
 
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import proto.TcpPacketProtos.TcpPacket.*;
 import proto.PlayerProtos.Player;
@@ -125,6 +131,55 @@ public class Main extends Application	 {
 			e.printStackTrace();
 		}
 	}
+	
+	public void endGame(String id) {
+		Main mainapplication = this;
+		
+		Label lbl = new Label("WINNER: " + id);
+		lbl.setFont(new Font(50));
+		VBox vbEndgame = new VBox();
+		Button btn = new Button();
+		btn.setText("Play Again");
+		vbEndgame.getChildren().add(lbl);
+		vbEndgame.getChildren().add(btn);
+		vbEndgame.setPadding(new Insets(300, 200, 300, 200));
+		
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				root.getChildren().remove(vbEndgame);
+				try {
+					gameController = new GameController(username);
+					gameController.ResetPlayer();
+		        	gameController.setOnMouseClicked(new EventHandler<MouseEvent>(){
+
+		                @Override
+		                public void handle(MouseEvent arg0) {
+		                	gameController.requestFocus();
+		                }
+
+		            });
+
+//			        	COMMENT THE WHILE LOOP TO DISABLE UDP WAITING OF PLAYERS
+//						TODO improve showing of lobby id 
+			        System.out.println("The lobby ID is " + lobbyId);
+			        
+			        gameController.setApp(mainapplication);
+			        root.getChildren().add(gameController);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+		});
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				root.getChildren().remove(gameController);
+				root.getChildren().add(vbEndgame);
+			}
+		});
+	}
 
 //	For replacing FXML
 	private Initializable replaceSceneContent(String fxml) throws Exception {
@@ -157,22 +212,29 @@ public class Main extends Application	 {
 //        	COMMENT THE WHILE LOOP TO DISABLE UDP WAITING OF PLAYERS
 //			TODO improve showing of lobby id 
 	        System.out.println("The lobby ID is " + this.lobbyId);
-	        while (true) {
-	        	Thread.sleep(1);
-//	        	System.out.println("Waiting for other players...");
-	        	if (gameController.udpIsConnected() && gameController.isStart()) {
-	        		System.out.println("Loading the game window...");
-	        		break;
-	        	}
-	        }
+	        root.getChildren().add(page);
 
-        	root.getChildren().addAll(page, gameController);
+	        gameController.setApp(this);
         }else {
         	root.getChildren().add(page);
         }
         return (Initializable)loader.getController();
     }
-		
+	
+	public void addGameController(GameController gamecontroller) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					root.getChildren().add(gamecontroller);
+				}
+				catch(Exception e) {
+					
+				}
+			}
+		});
+	}
+	
 //	Setters
 	public void setIsAuth(boolean val) {
 		isAuth = val; 

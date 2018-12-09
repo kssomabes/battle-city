@@ -30,7 +30,17 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	private final int DOWN = 2;
 	private final int LEFT = 3;
 	private final int RIGHT = 4;
-
+	private int reset = 0;
+	private int reset2 = 0;
+	private Main application;
+	
+	void setApp(Main application) {
+    	this.application = application;
+    }
+	void ResetPlayer() {
+    	reset = 1;
+    }
+	
 	Terrain[][] cells;
 	double x, y;
 	String serverData;
@@ -44,7 +54,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	private List<GameObject> bullets = new ArrayList<>();
 	private List<GameObject> blocks = new ArrayList<>();
 	private List<GameObject> powerUps = new ArrayList<>();
-
+	public AnimationTimer timer;
 	private GameObject player;
 
 	// Add throws Exception to handle socket exception
@@ -59,6 +69,16 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 		thread.start();
 	}
 
+	public void ResetPanel() {
+		final ObservableList<Node> children = this.getChildren();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				children.removeAll(children);
+			}
+		});
+	}
+	
 	private void createContent() {
 
 		player = new GamePlayer();
@@ -71,7 +91,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 		// Adds Player
 		addGameObject(player, this.x, this.y);
 
-		AnimationTimer timer = new AnimationTimer() {
+		timer = new AnimationTimer() {
 
 			@Override
 			public void handle(long now) {
@@ -114,40 +134,42 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 			} else if (e.getCode() == KeyCode.RIGHT) {
 				player.goRight(1);
 			} else if (e.getCode() == KeyCode.SPACE) {
-				Bullet bullet = new Bullet();
-				int UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4;
-				// bullet.setPosition(player.getPosition().normalize().multiply(2)); // Speed of
-				// bullet
-				bullet.setPosition(player.getPosition());
-				if (player.getLastDirection() == UP) {
-					bullet.goUp(5);
-				} else if (player.getLastDirection() == DOWN) {
-					bullet.goDown(5);
-				} else if (player.getLastDirection() == LEFT) {
-					bullet.goLeft(5);
-				} else if (player.getLastDirection() == RIGHT) {
-					bullet.goRight(5);
-				}
-				if (player.getCooldown() <= 0) {
-					// get direction para sa harap ng player magi-ispawn yung bullet??? 20x20 yung
-					// size ng player
-					int x = 5, y = 5; // center of player
+				if (player.isAlive()) {
+					Bullet bullet = new Bullet();
+					int UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4;
+					// bullet.setPosition(player.getPosition().normalize().multiply(2)); // Speed of
+					// bullet
+					bullet.setPosition(player.getPosition());
 					if (player.getLastDirection() == UP) {
-						y = -11;
+						bullet.goUp(5);
 					} else if (player.getLastDirection() == DOWN) {
-						y = 21;
+						bullet.goDown(5);
 					} else if (player.getLastDirection() == LEFT) {
-						x = -11;
+						bullet.goLeft(5);
 					} else if (player.getLastDirection() == RIGHT) {
-						x = 21;
+						bullet.goRight(5);
 					}
-					addBullet(bullet, player.getView().getTranslateX() + x, player.getView().getTranslateY() + y,
-							playerName + '_' + bulletsfired); // Bullet spawns at the center of the player
-					double xbullet = player.getView().getTranslateX() + x;
-					double ybullet = player.getView().getTranslateY() + y;
-					send("CREATEBULLET:" + playerName + "_" + bulletsfired + ":" + xbullet + ":" + ybullet + ":" + player.getLastDirection());
-					player.setCooldown(60);
-					bulletsfired++;
+					if (player.getCooldown() <= 0) {
+						// get direction para sa harap ng player magi-ispawn yung bullet??? 20x20 yung
+						// size ng player
+						int x = 5, y = 5; // center of player
+						if (player.getLastDirection() == UP) {
+							y = -11;
+						} else if (player.getLastDirection() == DOWN) {
+							y = 21;
+						} else if (player.getLastDirection() == LEFT) {
+							x = -11;
+						} else if (player.getLastDirection() == RIGHT) {
+							x = 21;
+						}
+						addBullet(bullet, player.getView().getTranslateX() + x, player.getView().getTranslateY() + y,
+								playerName + '_' + bulletsfired); // Bullet spawns at the center of the player
+						double xbullet = player.getView().getTranslateX() + x;
+						double ybullet = player.getView().getTranslateY() + y;
+						send("CREATEBULLET:" + playerName + "_" + bulletsfired + ":" + xbullet + ":" + ybullet + ":" + player.getLastDirection());
+						player.setCooldown(60);
+						bulletsfired++;
+					}
 				}
 			}
 			e.consume();
@@ -167,8 +189,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	}
 
 	public void addBullet(GameObject bullet, double x, double y, String ID) {
-		bullets.add(bullet);
-		addGameObject(bullet, x, y, ID);
+		addGameObjectBullet(bullet, x, y, ID);
 	}
 
 	public void addBlock(GameObject block, double x, double y) {
@@ -193,6 +214,20 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 		});
 	}
 
+	private void addGameObjectBullet(GameObject object, double x, double y, String ID) {
+		final ObservableList<Node> children = this.getChildren();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				object.getView().setTranslateX(x);
+				object.getView().setTranslateY(y);
+				object.getView().setId(ID);
+				children.add(object.getView());
+				bullets.add(object);
+			}
+		});
+	}
+	
 	private void addGameObject(GameObject object, double x, double y, String ID) {
 		final ObservableList<Node> children = this.getChildren();
 		Platform.runLater(new Runnable() {
@@ -254,7 +289,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 				this.requestFocus();
 			}
 			for (GameObject playerz : otherPlayers) {
-				if (bullet.isColliding(playerz)) {
+				if (playerz.isAlive() && bullet.isColliding(playerz)) {
 					bullet.setAlive(false);
 					playerz.hit();
 					if (playerz.getLife() <= 0) {
@@ -321,6 +356,18 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 		send("PLAYER " + this.playerName + " " + player.getView().getTranslateX() + " "
 				+ player.getView().getTranslateY());
 		player.updateplayer(blocks);
+		
+		int winnerfound = 1;
+		for (GameObject playerz : otherPlayers) {
+			if (playerz.isAlive()) {
+				winnerfound = 0;
+				break;
+			}
+		}
+		if (winnerfound == 1) {
+			timer.stop();
+			send("WINNER:" + this.playerName);
+		}
 	}
 
 	@Override
@@ -358,6 +405,12 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 				this.x = Double.parseDouble(playerInfo[2]);
 				this.y = Double.parseDouble(playerInfo[3]);
 			} else if (!this.connected) {
+				if (this.reset == 1) {
+					gameStage = WAITING_FOR_PLAYERS;
+					send("RESET");
+					reset = 0;
+					ResetPanel();
+				}
 				System.out.println("You are trying to connect...");
 				send("CONNECT " + this.playerName);
 			} else if (this.connected) {
@@ -371,6 +424,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 					if (serverData.startsWith("PLAYER")) {
 						System.out.println("Loading initial player list");
 						String[] playersInfo = serverData.split(":");
+						otherPlayers.clear();
 						for (int i = 0; i < playersInfo.length; i++) {
 							// PLAYER name x y
 							String[] playerInfo = playersInfo[i].split(" ");
@@ -384,8 +438,6 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 							double x = Double.parseDouble(playerInfo[2]);
 							double y = Double.parseDouble(playerInfo[3]);
 
-							//otherPlayers.clear();
-
 							GameObject playerZ = new GamePlayer();
 							playerZ.setPosition(new Point2D(x, y));
 							playerZ.setLife(5);
@@ -398,6 +450,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 					}
 				} else if (gameStage == GAME_START) {
 					System.out.println("The game is about to start");
+					application.addGameController(this);
 					gameStage = IN_PROGRESS;
 				} else if (gameStage == IN_PROGRESS) {
 					if (serverData.startsWith("PLAYER")) {
@@ -457,6 +510,12 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 						double x = Double.parseDouble(objectinfos[2]);
 						double y = Double.parseDouble(objectinfos[3]);
 						addPowerUp(new PowerUp(), x, y, id);
+					} else if (serverData.startsWith("WINNER")) {
+							String[] objectinfos = serverData.split(":");
+							String id = objectinfos[1];
+							application.endGame(id);
+							timer.stop();
+							thread.stop();
 					}
 				} else {
 					// Other stages not catched yet
