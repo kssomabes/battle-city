@@ -67,6 +67,8 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 		// Load Map
 		loadMap();
+//		addBlock(new Block(), 0 * 25, 0);
+//		addBlock(new Block(), 1 * 25, 0);
 
 		// Adds Player
 		addGameObject(player, this.x, this.y);
@@ -182,9 +184,15 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	}
 
 	private void addGameObject(GameObject object, double x, double y) {
-		object.getView().setTranslateX(x);
-		object.getView().setTranslateY(y);
-		this.getChildren().add(object.getView());
+		final ObservableList<Node> children = this.getChildren();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				object.getView().setTranslateX(x);
+				object.getView().setTranslateY(y);
+				children.add(object.getView());
+			}
+		});
 	}
 
 	private void addGameObject(GameObject object, double x, double y, String ID) {

@@ -1,5 +1,6 @@
 package battlecity;
 
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -7,13 +8,17 @@ import java.util.List;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 
 /**
  * GameObject
  */
 public class GameObject implements Constants {
 
-    private Node view;
+//    private Node imgView;
     private Point2D position = new Point2D(0, 0);
 
     private final int STOP = 0;
@@ -28,16 +33,27 @@ public class GameObject implements Constants {
     private int cooldown = 0;
     private int life = 0;
     private int damage = 1;
+    
+    private ImageView imgView;
 
     private Boolean alive = true;
 
-    public GameObject(Node view) {
-        this.view = view;
+    public GameObject(Rectangle imgView) {
+//    	InputStream is = getClass().getClassLoader().getResourceAsStream("tank_ico.png");
+//    	Image img = new Image(is);
+//    	imgView.setFill(new ImagePattern(img));
+//        this.imgView = imgView;
+    }
+    
+    public void setImageView(Image img, int height, int width) {
+        this.imgView = new ImageView(img);
+        this.imgView.setFitHeight(height);
+        this.imgView.setFitWidth(width);
     }
 
     public void update() {
-        view.setTranslateX(view.getTranslateX() + position.getX());
-        view.setTranslateY(view.getTranslateY() + position.getY());
+        imgView.setTranslateX(imgView.getTranslateX() + position.getX());
+        imgView.setTranslateY(imgView.getTranslateY() + position.getY());
     }
 	
     public void updateplayer(List<GameObject> blocks) {
@@ -75,8 +91,8 @@ public class GameObject implements Constants {
     		}
     	}
     	if (!willCollide) {
-	    	view.setTranslateX(view.getTranslateX() + position.getX());
-	        view.setTranslateY(view.getTranslateY() + position.getY());
+	    	imgView.setTranslateX(imgView.getTranslateX() + position.getX());
+	        imgView.setTranslateY(imgView.getTranslateY() + position.getY());
     	}
     }
 
@@ -88,8 +104,12 @@ public class GameObject implements Constants {
         return this.position;
     }
 
-    public Node getView() {
-        return view;
+//    public Node getView() {
+//        return view;
+//    }
+
+    public ImageView getView() {
+        return imgView;
     }
 
     public Boolean isAlive() {
