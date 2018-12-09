@@ -247,6 +247,19 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 				this.getChildren().removeAll(bullet.getView());
 				this.requestFocus();
 			}
+			for (GameObject playerz : otherPlayers) {
+				if (bullet.isColliding(playerz)) {
+					bullet.setAlive(false);
+					playerz.hit();
+					if (playerz.getLife() <= 0) {
+						playerz.setAlive(false);
+						this.getChildren().removeAll(playerz.getView());
+					}
+	
+					this.getChildren().removeAll(bullet.getView());
+					this.requestFocus();
+				}
+			}
 		}
 
 		for (GameObject powerUp : powerUps) {
@@ -369,7 +382,7 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 
 							GameObject playerZ = new GamePlayer();
 							playerZ.setPosition(new Point2D(x, y));
-
+							playerZ.setLife(5);
 							addGameObject(playerZ, x, y, pname);
 							otherPlayers.add(playerZ);
 						}
