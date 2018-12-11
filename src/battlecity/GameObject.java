@@ -199,6 +199,23 @@ public class GameObject implements Constants {
         return lastDirection;
     }
 
+    public void setLastDirection(int lastDirection) {	// for rotation of other players
+        this.lastDirection = lastDirection;
+        switch(lastDirection) {
+        	case UP:
+                imgView.setRotate(0);
+        		break;
+        	case DOWN:
+                imgView.setRotate(180);
+        		break;
+        	case LEFT:
+                imgView.setRotate(270);
+        		break;
+        	case RIGHT:
+                imgView.setRotate(90);
+        }
+    }
+
     /**
      *
      *  PowerUp methods
