@@ -37,11 +37,11 @@ public class GameController extends Pane implements Constants, Runnable{
 	void setApp(Main application) {
     	this.application = application;
     }
+	
 	void ResetPlayer() {
     	reset = 1;
     }
-	
-	Terrain[][] cells;
+
 	double x, y;
 	String serverData;
 	String playerName;
@@ -62,7 +62,6 @@ public class GameController extends Pane implements Constants, Runnable{
 	
 	// Add throws Exception to handle socket exception
 	public GameController(String name, String ipAdd, int port) throws Exception {
-		// Add the GUI stuff here
 		addKeyListeners();
 		this.setFocusTraversable(true);
 		this.playerName = name;
@@ -109,9 +108,7 @@ public class GameController extends Pane implements Constants, Runnable{
 
 	public void loadMap() {
 		String path = "src/battlecity/Map.txt";
-		// FileReader a = new FileReader(path);
-		// try (BufferedReader br = new BufferedReader(new
-		// FileReader(getClass().getClassLoader().getResourceAsStream("Map.txt")))) {
+
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			String sCurrentLine;
 			int y = 0;
@@ -256,7 +253,6 @@ public class GameController extends Pane implements Constants, Runnable{
 					if (node.getId().equals(id)) {
 						Platform.runLater(new Runnable() {
 							@Override
-//							ZXY
 							public void run() {
 								node.setTranslateX(x);
 								node.setTranslateY(y);
@@ -468,11 +464,9 @@ public class GameController extends Pane implements Constants, Runnable{
 							String pname = playerInfo[1];
 
 							if (pname.equals(this.playerName)) {
-								System.out.println("Current player here ");
 								this.color = playerInfo[5];
 								continue;
 							}
-							System.out.println("Player name: " + pname);
 							double x = Double.parseDouble(playerInfo[2]);
 							double y = Double.parseDouble(playerInfo[3]);
 
@@ -493,11 +487,8 @@ public class GameController extends Pane implements Constants, Runnable{
 					gameStage = IN_PROGRESS;
 				} else if (gameStage == IN_PROGRESS) {
 					if (serverData.startsWith("PLAYER")) {
-						// System.out.println("IN PROGRESS: PLAYER");
 						// Player info received from server
-						// As of now, catches the movement of the other players
 						String[] playersInfo = serverData.split(":");
-						//this.getChildren().removeAll(otherPlayers);
 
 						for (int i = 0; i < playersInfo.length; i++) {
 							// PLAYER name x y
@@ -526,9 +517,7 @@ public class GameController extends Pane implements Constants, Runnable{
 						int position = Integer.parseInt(objectinfos[4]);
 						if (!id.split("_")[0].equals(playerName)) {
 							Bullet bullet = new Bullet();
-							// bullet.setPosition(player.getPosition().normalize().multiply(2)); // Speed of
 							// bullet
-							//bullet.setPosition(player.getPosition());
 							if (position == UP) {
 								bullet.goUp(5);
 							} else if (position == DOWN) {

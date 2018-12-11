@@ -130,10 +130,18 @@ public class UserController extends Pane implements Initializable {
 					lobbyId = lobbyIdTextField.getText();
 				}
 				
+				if (ipAddTextField.getText().length() == 0) {
+					throw new Exception("MISSING_IP_ADD");
+				}
+				
+				if (portTextField.getText().length() == 0) {
+					throw new Exception("MISSING_PORT_NUM");
+				}
+				
 				String ipAdd = ipAddTextField.getText();
 				int port = Integer.parseInt(portTextField.getText());
-				
-		        String username = usernameTextfield.getText();
+
+				String username = usernameTextfield.getText();
 		        Player newPlayer = Player.newBuilder()
 						.setName(username)
 						.build();
@@ -179,14 +187,16 @@ public class UserController extends Pane implements Initializable {
 				lobbyIdLabelFielderr2.setVisible(false);
 				lobbyIdLabelFielderr3.setVisible(false);
 				lobbyIdLabelFielderr4.setVisible(false);
-
+				ipMissingWarning.setVisible(false);
+				portMissingWarning.setVisible(false);
 				clientSocket.close();
 			} catch(IOException e){
 				lobbyIdLabelFielderr1.setVisible(true);
 				lobbyIdLabelFielderr2.setVisible(false);
 				lobbyIdLabelFielderr3.setVisible(false);
 				lobbyIdLabelFielderr4.setVisible(false);
-
+				ipMissingWarning.setVisible(false);
+				portMissingWarning.setVisible(false);
 				clientSocket.close();
 			} catch (Exception e) {
 				if (e.getMessage().equals("MORE_THAN")) {
@@ -194,6 +204,23 @@ public class UserController extends Pane implements Initializable {
 					lobbyIdLabelFielderr2.setVisible(false);
 					lobbyIdLabelFielderr3.setVisible(false);
 					lobbyIdLabelFielderr4.setVisible(true);
+					ipMissingWarning.setVisible(false);
+					portMissingWarning.setVisible(false);
+				}else if (e.getMessage().equals("MISSING_IP_ADD")) {
+					lobbyIdLabelFielderr1.setVisible(false);
+					lobbyIdLabelFielderr2.setVisible(false);
+					lobbyIdLabelFielderr3.setVisible(false);
+					lobbyIdLabelFielderr4.setVisible(false);
+					ipMissingWarning.setVisible(true);
+					portMissingWarning.setVisible(false);
+				}else if (e.getMessage().equals("MISSING_PORT_NUM")) {
+					lobbyIdLabelFielderr1.setVisible(false);
+					lobbyIdLabelFielderr2.setVisible(false);
+					lobbyIdLabelFielderr3.setVisible(false);
+					lobbyIdLabelFielderr4.setVisible(false);
+					ipMissingWarning.setVisible(false);
+					portMissingWarning.setVisible(true);
+
 				}
 			}
 		}
