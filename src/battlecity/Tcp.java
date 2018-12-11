@@ -24,7 +24,7 @@ public class Tcp implements Runnable{
 	private static DataInputStream inputStream = null;
 	private static BufferedReader inputLine = null;
 	private static boolean closed = false;
-	private Thread thread = new Thread(this);
+	private Thread thread;
 	private static Player newPlayer = null;
 	public ChatController controller;
 	public static String username;
@@ -32,6 +32,7 @@ public class Tcp implements Runnable{
 	public Tcp(String username, Socket clientsocket, OutputStream outputStream, DataInputStream inputStream, Player newPlayer, ChatController con) {
 //		Constructor
 		try {
+			thread = new Thread(this);
 			this.clientSocket = clientsocket;
 			inputLine = new BufferedReader(new InputStreamReader(System.in));
 			Tcp.outputStream = outputStream;
@@ -93,7 +94,7 @@ public class Tcp implements Runnable{
 						controller.addToChat(chatreceived);
 					}else if(received.getType() == PacketType.CONNECT){
 						ConnectPacket newUserConnect = TcpPacket.ConnectPacket.parseFrom(msg);
-						controller.addAsServer(newUserConnect.getPlayer().getName() + " connected to the lobby.");
+						this.controller.addAsServer(newUserConnect.getPlayer().getName() + " connected to the lobby.");
 						PlayerListPacket updatePlayerList = PlayerListPacket.newBuilder()
 								.setType(PacketType.PLAYER_LIST)
 								.build();

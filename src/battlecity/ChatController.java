@@ -105,50 +105,52 @@ public class ChatController extends Pane implements Initializable{
     }
     
     public synchronized void addToChat(ChatPacket msg) {
-        Task<HBox> othersMessages = new Task<HBox>() {
-            @Override
-            public HBox call() throws Exception {
-                BubbledLabel bl6 = new BubbledLabel(); 
-                bl6.setText(msg.getPlayer().getName() + ": " + msg.getMessage());
-                bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
-                HBox x = new HBox();
-                bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
-                x.getChildren().addAll(bl6);
-                return x;
+    	Platform.runLater(() -> {
+    		Task<HBox> othersMessages = new Task<HBox>() {
+                @Override
+                public HBox call() throws Exception {
+                    BubbledLabel bl6 = new BubbledLabel(); 
+                    bl6.setText(msg.getPlayer().getName() + ": " + msg.getMessage());
+                    bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
+                    HBox x = new HBox();
+                    bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
+                    x.getChildren().addAll(bl6);
+                    return x;
+                }
+            };
+
+            othersMessages.setOnSucceeded(event -> {
+                chatPane.getItems().add(othersMessages.getValue());
+            });
+
+            Task<HBox> yourMessages = new Task<HBox>() {
+                @Override
+                public HBox call() throws Exception {
+                    BubbledLabel bl6 = new BubbledLabel();
+                    bl6.setText(msg.getMessage());
+                    bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
+                            null, null)));
+                    HBox x = new HBox();
+                    x.setMaxWidth(chatPane.getWidth() - 20);
+                    x.setAlignment(Pos.BOTTOM_RIGHT);
+                    bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
+                    x.getChildren().addAll(bl6);
+                    return x;
+                }
+            };
+            yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
+
+            if (msg.getPlayer().getName().equals(usernameLabel.getText())) {
+                Thread t2 = new Thread(yourMessages);
+                t2.setDaemon(true);
+                t2.start();
+            } else {
+                Thread t = new Thread(othersMessages);
+                t.setDaemon(true);
+                t.start();
             }
-        };
-
-        othersMessages.setOnSucceeded(event -> {
-            chatPane.getItems().add(othersMessages.getValue());
-        });
-
-        Task<HBox> yourMessages = new Task<HBox>() {
-            @Override
-            public HBox call() throws Exception {
-                BubbledLabel bl6 = new BubbledLabel();
-                bl6.setText(msg.getMessage());
-                bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
-                        null, null)));
-                HBox x = new HBox();
-                x.setMaxWidth(chatPane.getWidth() - 20);
-                x.setAlignment(Pos.BOTTOM_RIGHT);
-                bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-                x.getChildren().addAll(bl6);
-                return x;
-            }
-        };
-        yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
-
-        if (msg.getPlayer().getName().equals(usernameLabel.getText())) {
-            Thread t2 = new Thread(yourMessages);
-            t2.setDaemon(true);
-            t2.start();
-        } else {
-            Thread t = new Thread(othersMessages);
-            t.setDaemon(true);
-            t.start();
-        }
-        chatPane.scrollTo(chatPane.getItems().size());
+            chatPane.scrollTo(chatPane.getItems().size());
+    	});
     }
     
     /* Method to display server messages */
