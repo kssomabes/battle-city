@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import java.lang.String?>
 <?import javafx.scene.control.ToggleGroup?>
-<BorderPane fx:id="borderPane" maxWidth="350.0" minWidth="350.0" prefHeight="420.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battlecity.UserController">
+<BorderPane fx:id="borderPane" maxHeight="750.0" maxWidth="1250" prefHeight="750.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="battlecity.UserController">
    <right>
       <GridPane BorderPane.alignment="CENTER">
          <columnConstraints>
@@ -34,24 +34,37 @@
             <RowConstraints maxHeight="110.0" minHeight="9.0" prefHeight="11.0" />
          </rowConstraints>
          <children>
-         	<Label fx:id="lobbyIdLabelFielderr1"  text="Cannot Connect" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
-         	<Label fx:id="lobbyIdLabelFielderr2"  text="Invalid Lobby ID" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
-         	<Label fx:id="lobbyIdLabelFielderr3"  text="Username is empty" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
-        	<Label fx:id="lobbyIdLabelField"  text="Lobby ID: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="false"/>
-        	<TextField fx:id="lobbyIdTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" visible="false"/>
-         	<VBox GridPane.columnIndex="2" GridPane.rowIndex="5">
+         	<Label fx:id="lobbyIdLabelFielderr1"  text="Cannot Connect" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="false"/>
+         	<Label fx:id="lobbyIdLabelFielderr2"  text="Invalid Lobby ID" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="false"/>
+         	<Label fx:id="lobbyIdLabelFielderr3"  text="Username is empty" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="false"/>
+         	<Label fx:id="lobbyIdLabelFielderr4"  text="Players should only be 3-4" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="false"/>
+        	<Label fx:id="lobbyIdLabelField"  text="Lobby ID: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="5" visible="false"/>
+        	<TextField fx:id="lobbyIdTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" visible="false"/>
+        	<Label fx:id="ipMissingWarning"  text="IP Address is empty" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="false"/>
+        	<Label fx:id="portMissingWarning"  text="Port number is empty" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="false"/>
+ 	        	
+         <Label fx:id="playerNumberLabelField"  text="Player count: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="5" visible="true"/>
+         <TextField fx:id="playerNumberTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" visible="true"/>
+         
+         <Label fx:id="ipAddTextLabel" text="IP Address: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="true"/>
+       	 <TextField fx:id="ipAddTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" prefColumnCount = "2" visible="true" />        	
+         <Label fx:id="portTextLabel"  text="Port Number: " textFill="#f89406" GridPane.columnIndex="3" GridPane.rowIndex="6" visible="true"/>
+         <TextField fx:id="portTextField" GridPane.columnIndex="4" GridPane.rowIndex="6"  prefColumnCount = "1" visible="true"/>        	
+            
+         	<VBox GridPane.columnIndex="2" GridPane.rowIndex="4">
 			    <fx:define>
 			        <ToggleGroup fx:id="tgCommand"/>
 			    </fx:define>
 			    <children>
-			        <RadioButton text="Create Lobby" toggleGroup="$tgCommand" selected="true" onAction="#hideLobby"/>
-			        <RadioButton text="Join Lobby" toggleGroup="$tgCommand" onAction="#showLobby"/>
+			        <RadioButton fx:id="createLobbyRb" text="Create Lobby" toggleGroup="$tgCommand" selected="true" onAction="#hideLobby"/>
+			        <RadioButton fx:id="joinLobbyRb" text="Join Lobby" toggleGroup="$tgCommand" onAction="#showLobby"/>
 			    </children>
 			</VBox>
-            <Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@Login.css" text="Connect" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+            <Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@Login.css" text="Connect" GridPane.columnIndex="2" GridPane.rowIndex="8" />
             
             <Label text="Username: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="usernameTextfield" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+         
             <StackPane GridPane.columnIndex="2" GridPane.rowIndex="1">
                <children>
                   <ImageView fx:id="Defaultview" fitHeight="93" fitWidth="300" pickOnBounds="true" preserveRatio="true">

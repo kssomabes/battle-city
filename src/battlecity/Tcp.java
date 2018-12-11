@@ -7,16 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
-import battlecity.UserController;
 
 import proto.PlayerProtos.Player;
 import proto.TcpPacketProtos.TcpPacket;
 import proto.TcpPacketProtos.TcpPacket.ChatPacket;
 import proto.TcpPacketProtos.TcpPacket.ConnectPacket;
-import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
 import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
-import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
 import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
 import battlecity.ChatController;
@@ -28,7 +24,7 @@ public class Tcp implements Runnable{
 	private static DataInputStream inputStream = null;
 	private static BufferedReader inputLine = null;
 	private static boolean closed = false;
-	private Thread thread = new Thread(this);
+	private Thread thread;
 	private static Player newPlayer = null;
 	public ChatController controller;
 	public static String username;
@@ -36,13 +32,14 @@ public class Tcp implements Runnable{
 	public Tcp(String username, Socket clientsocket, OutputStream outputStream, DataInputStream inputStream, Player newPlayer, ChatController con) {
 //		Constructor
 		try {
+			thread = new Thread(this);
 			this.clientSocket = clientsocket;
 			inputLine = new BufferedReader(new InputStreamReader(System.in));
-			this.outputStream = outputStream;
-			this.inputStream = inputStream;
-			this.username = username;
-			this.newPlayer = newPlayer;
-			this.controller = con;
+			Tcp.outputStream = outputStream;
+			Tcp.inputStream = inputStream;
+			Tcp.username = username;
+			Tcp.newPlayer = newPlayer;
+			this.controller = con; 
 			TCPConnect();
 		} catch (UnknownHostException e) {
 			System.err.println("Unknown host");
@@ -97,7 +94,7 @@ public class Tcp implements Runnable{
 						controller.addToChat(chatreceived);
 					}else if(received.getType() == PacketType.CONNECT){
 						ConnectPacket newUserConnect = TcpPacket.ConnectPacket.parseFrom(msg);
-						controller.addAsServer(newUserConnect.getPlayer().getName() + " connected to the lobby.");
+						this.controller.addAsServer(newUserConnect.getPlayer().getName() + " connected to the lobby.");
 						PlayerListPacket updatePlayerList = PlayerListPacket.newBuilder()
 								.setType(PacketType.PLAYER_LIST)
 								.build();
@@ -123,4 +120,13 @@ public class Tcp implements Runnable{
 		}
 	}
 	
+	public void closeStream() {
+		try {
+			inputStream.close();
+			outputStream.close();
+			thread.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

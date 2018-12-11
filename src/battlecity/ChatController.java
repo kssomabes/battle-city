@@ -4,40 +4,26 @@ import java.io.IOException;
 
 import battlecity.Main;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 
-import proto.PlayerProtos.Player;
-import proto.TcpPacketProtos.TcpPacket;
 import proto.TcpPacketProtos.TcpPacket.ChatPacket;
-import proto.TcpPacketProtos.TcpPacket.ConnectPacket;
-import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
-import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
-import proto.TcpPacketProtos.TcpPacket.ErrLdnePacket;
-import proto.TcpPacketProtos.TcpPacket.PacketType;
 import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
+import java.util.ResourceBundle;
+import java.net.URL;
 
-public class ChatController {
+public class ChatController extends Pane implements Initializable{
 	@FXML private TextArea messageBox;
     @FXML private Label usernameLabel;
     @FXML private Label onlineCountLabel;
@@ -45,8 +31,29 @@ public class ChatController {
     @FXML private Label lobbyLabel;
     
     @FXML ListView chatPane;
-    @FXML BorderPane borderPane;
+//    @FXML BorderPane borderPane;
     
+    Main application;
+    Tcp tcp; 
+    
+    String username = "";
+    String lobbyId = "";
+    
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {}
+    
+    public void setApp(Main application) {
+    	this.application = application;
+    	this.username = application.username; 
+    	this.lobbyId = application.lobbyId;
+    	this.tcp = new Tcp(username, application.getConnection(), 
+				application.getOutputStream(), 
+				application.getInputStream(), 
+				application.getPlayer(), 
+				this);
+    	setUsernameLabel(this.username);
+    	setLobby(this.lobbyId);
+    }
     public void setUsernameLabel(String username) {
         this.usernameLabel.setText(username);
     }
@@ -70,10 +77,10 @@ public class ChatController {
     
     public void sendButtonAction() throws IOException {
         String msg = messageBox.getText();
-        if (!messageBox.getText().isEmpty()) {
-            Tcp.send(msg);
-            messageBox.clear();
+        if (messageBox.getText().trim().length() > 0) {
+            Tcp.send(msg.trim());
         }
+        messageBox.clear();
     }
     
     public void sendMethod(KeyEvent event) throws IOException {
@@ -84,54 +91,66 @@ public class ChatController {
     
     @FXML
     public void closeApplication() {
-        Platform.exit();
-        System.exit(0);
+    	try {
+    		application.getInputStream().close();
+    		application.getOutputStream().close();
+    		application.getConnection().close();
+    		tcp.closeStream();
+            Platform.exit();
+            System.exit(0);
+    	}catch(IOException e) {
+    		e.printStackTrace();
+    	}
+		
     }
     
     public synchronized void addToChat(ChatPacket msg) {
-        Task<HBox> othersMessages = new Task<HBox>() {
-            @Override
-            public HBox call() throws Exception {
-                BubbledLabel bl6 = new BubbledLabel(); 
-                bl6.setText(msg.getPlayer().getName() + ": " + msg.getMessage());
-                bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
-                HBox x = new HBox();
-                bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
-                x.getChildren().addAll(bl6);
-                return x;
+    	Platform.runLater(() -> {
+    		Task<HBox> othersMessages = new Task<HBox>() {
+                @Override
+                public HBox call() throws Exception {
+                    BubbledLabel bl6 = new BubbledLabel(); 
+                    bl6.setText(msg.getPlayer().getName() + ": " + msg.getMessage());
+                    bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
+                    HBox x = new HBox();
+                    bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
+                    x.getChildren().addAll(bl6);
+                    return x;
+                }
+            };
+
+            othersMessages.setOnSucceeded(event -> {
+                chatPane.getItems().add(othersMessages.getValue());
+            });
+
+            Task<HBox> yourMessages = new Task<HBox>() {
+                @Override
+                public HBox call() throws Exception {
+                    BubbledLabel bl6 = new BubbledLabel();
+                    bl6.setText(msg.getMessage());
+                    bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
+                            null, null)));
+                    HBox x = new HBox();
+                    x.setMaxWidth(chatPane.getWidth() - 20);
+                    x.setAlignment(Pos.BOTTOM_RIGHT);
+                    bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
+                    x.getChildren().addAll(bl6);
+                    return x;
+                }
+            };
+            yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
+
+            if (msg.getPlayer().getName().equals(usernameLabel.getText())) {
+                Thread t2 = new Thread(yourMessages);
+                t2.setDaemon(true);
+                t2.start();
+            } else {
+                Thread t = new Thread(othersMessages);
+                t.setDaemon(true);
+                t.start();
             }
-        };
-
-        othersMessages.setOnSucceeded(event -> {
-            chatPane.getItems().add(othersMessages.getValue());
-        });
-
-        Task<HBox> yourMessages = new Task<HBox>() {
-            @Override
-            public HBox call() throws Exception {
-                BubbledLabel bl6 = new BubbledLabel();
-                bl6.setText(msg.getMessage());
-                bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
-                        null, null)));
-                HBox x = new HBox();
-                x.setMaxWidth(chatPane.getWidth() - 20);
-                x.setAlignment(Pos.TOP_RIGHT);
-                bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-                x.getChildren().addAll(bl6);
-                return x;
-            }
-        };
-        yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
-
-        if (msg.getPlayer().getName().equals(usernameLabel.getText())) {
-            Thread t2 = new Thread(yourMessages);
-            t2.setDaemon(true);
-            t2.start();
-        } else {
-            Thread t = new Thread(othersMessages);
-            t.setDaemon(true);
-            t.start();
-        }
+            chatPane.scrollTo(chatPane.getItems().size());
+    	});
     }
     
     /* Method to display server messages */
