@@ -43,10 +43,16 @@ public class UserController extends Pane implements Initializable {
     @FXML private TextField lobbyIdTextField;
     @FXML private Label playerNumberLabelField; 		// Player number
     @FXML private TextField playerNumberTextField; 	// Player number
+    @FXML private Label ipAddTextLabel; 	// IP Add for UDP
+    @FXML private TextField ipAddTextField; 	// IP Add for UDP
+    @FXML private Label portTextLabel; 	// IP Add for UDP
+    @FXML private TextField portTextField; 	// Port number for UDP
     @FXML private Label lobbyIdLabelFielderr1;
     @FXML private Label lobbyIdLabelFielderr2;
     @FXML private Label lobbyIdLabelFielderr3;
     @FXML private Label lobbyIdLabelFielderr4; // Player number
+    @FXML private Label ipMissingWarning;
+    @FXML private Label portMissingWarning;
     @FXML private BorderPane borderPane;
     
     @FXML ToggleGroup tgCommand; 
@@ -101,6 +107,10 @@ public class UserController extends Pane implements Initializable {
 //				Check radio button: create or join
 				if (toggleGroupValue.equals("createLobbyRb")) {
 					int numPlayers = Integer.parseInt(playerNumberTextField.getText());
+//					Since game specs limited max number of players to 4
+					if (numPlayers > 4) {
+						throw new Exception("MORE_THAN");
+					}
 					CreateLobbyPacket createLobbyInit = CreateLobbyPacket.newBuilder()
 							.setType(PacketType.CREATE_LOBBY)
 							.setMaxPlayers(numPlayers)
@@ -119,6 +129,9 @@ public class UserController extends Pane implements Initializable {
 				}else if (toggleGroupValue.equals("joinLobbyRb")) {
 					lobbyId = lobbyIdTextField.getText();
 				}
+				
+				String ipAdd = ipAddTextField.getText();
+				int port = Integer.parseInt(portTextField.getText());
 				
 		        String username = usernameTextfield.getText();
 		        Player newPlayer = Player.newBuilder()
@@ -147,7 +160,7 @@ public class UserController extends Pane implements Initializable {
 					if (receivedC.isInitialized()){
 //						main application will be modifying the scene in openChat
 				        application.setIsAuth(true);
-				        application.openChat(receivedC, username, clientSocket, outputStream, inputStream, newPlayer, lobbyId);				        
+				        application.openChat(receivedC, username, clientSocket, outputStream, inputStream, newPlayer, lobbyId, ipAdd, port);				        
 					}else{
 						lobbyIdLabelFielderr1.setVisible(false);
 						lobbyIdLabelFielderr2.setVisible(true);
@@ -165,12 +178,23 @@ public class UserController extends Pane implements Initializable {
 				lobbyIdLabelFielderr1.setVisible(true);
 				lobbyIdLabelFielderr2.setVisible(false);
 				lobbyIdLabelFielderr3.setVisible(false);
+				lobbyIdLabelFielderr4.setVisible(false);
+
 				clientSocket.close();
 			} catch(IOException e){
 				lobbyIdLabelFielderr1.setVisible(true);
 				lobbyIdLabelFielderr2.setVisible(false);
 				lobbyIdLabelFielderr3.setVisible(false);
+				lobbyIdLabelFielderr4.setVisible(false);
+
 				clientSocket.close();
+			} catch (Exception e) {
+				if (e.getMessage().equals("MORE_THAN")) {
+					lobbyIdLabelFielderr1.setVisible(false);
+					lobbyIdLabelFielderr2.setVisible(false);
+					lobbyIdLabelFielderr3.setVisible(false);
+					lobbyIdLabelFielderr4.setVisible(true);
+				}
 			}
 		}
 		

@@ -14,12 +14,12 @@ public class GameServer implements Runnable, Constants{
 	int gameStage = WAITING_FOR_PLAYERS;
 	GameState game;
 
-	public GameServer(int numPlayers) {
+	public GameServer(String ipAdd, int port, int numPlayers) {
 		this.numPlayers = numPlayers; 
 		this.game = new GameState();
 		try {
 			serverSocket = new DatagramSocket(null);
-			InetSocketAddress address = new InetSocketAddress(IPADD, PORT);
+			InetSocketAddress address = new InetSocketAddress(ipAdd, port);
 			serverSocket.bind(address);
 			serverSocket.setSoTimeout(4000);
 		}catch (Exception e) {
@@ -53,7 +53,6 @@ public class GameServer implements Runnable, Constants{
 //			if (receivedDataString.length() > 0) System.out.println("Server received: " + receivedDataString);
 
 //			Handle received data
-//			if (receivedDataString.length() == 0) continue; // continue if empty, removed due to switch-case issue
 			
 			if(Math.random() < 0.001) { // powerup randomly spawn
 				broadcast("POWERUPS:POWERUP" + powerupsadded + ":" + Math.random()*750 + ":" + Math.random()*750);
@@ -61,7 +60,6 @@ public class GameServer implements Runnable, Constants{
 			}
 			
 			switch (gameStage) {
-			// TO-DO: Serialization 
 				case WAITING_FOR_PLAYERS:
 					if (receivedDataString.startsWith("CONNECT")){
 						// A user is trying to connect, broadcast this to other users if valid 
@@ -77,7 +75,7 @@ public class GameServer implements Runnable, Constants{
 							System.out.println("Sending CONNECTED " + tokens[1] + " " + player.getCoordinates());	
 							broadcast("CONNECTED " + tokens[1] + " " + player.getCoordinates());
 						}
-						System.out.println(this.currentNum);
+//						System.out.println(this.currentNum);
 						// Check if the required number of players has been met
 						if (this.currentNum == this.numPlayers){
 							broadcast("LOADING");
@@ -103,9 +101,6 @@ public class GameServer implements Runnable, Constants{
 							donereset = 1;
 						}
 					}
-//					else{
-//						System.out.println("Unhandled packet message: " + receivedDataString);
-//					}
 					break;
 				case GAME_START:
 					System.out.println("Game is starting!");
@@ -159,7 +154,6 @@ public class GameServer implements Runnable, Constants{
 
 // For sending data to all players
 	public void broadcast (String msg){
-		// 
 		for(Iterator ite=game.getPlayers().keySet().iterator();ite.hasNext();){
 			String name = (String)ite.next();
 			NetPlayer player= (NetPlayer) game.getPlayers().get(name);			
@@ -178,18 +172,18 @@ public class GameServer implements Runnable, Constants{
 			e.printStackTrace();
 		}
 	}
-	
-	public void spawnPosition() {
-//		Limit number of players for the game
-//		Depending on the map, give the four coordinates of the spawn positions
 
-	}
-	
 	public static void main(String[] args){
 		try {
-			new GameServer(Integer.parseInt(args[0]));
+			if (args.length == 1) {
+//				Assume that the sole parameter is the number of users
+				new GameServer(IPADD, PORT, Integer.parseInt(args[0]));
+			}else {
+				new GameServer(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+			}
+			
 		} catch (Exception e) {
-			System.out.println("Usage: java GameServer <number of users>");
+			System.out.println("Usage: java GameServer <IP Address> <Port> <number of users>");
 		}
 	}
 }

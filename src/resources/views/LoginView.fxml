@@ -38,12 +38,20 @@
          	<Label fx:id="lobbyIdLabelFielderr2"  text="Invalid Lobby ID" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
          	<Label fx:id="lobbyIdLabelFielderr3"  text="Username is empty" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
          	<Label fx:id="lobbyIdLabelFielderr4"  text="Players should only be 3-4" textFill="#ff0406" GridPane.columnIndex="2" GridPane.rowIndex="8" visible="false"/>
-        	<Label fx:id="lobbyIdLabelField"  text="Lobby ID: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="false"/>
-        	<TextField fx:id="lobbyIdTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" visible="false"/>
-         <Label fx:id="playerNumberLabelField"  text="Player count: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="true"/>
-         <TextField fx:id="playerNumberTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" visible="true"/>
-
-         	<VBox GridPane.columnIndex="2" GridPane.rowIndex="5">
+        	<Label fx:id="lobbyIdLabelField"  text="Lobby ID: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="5" visible="false"/>
+        	<TextField fx:id="lobbyIdTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" visible="false"/>
+			
+        	<Label fx:id="ipMissingWarning"  text="IP Address is empty" textFill="#ff0406" GridPane.columnIndex="3" GridPane.rowIndex="8" visible="false"/>
+        	<Label fx:id="portMissingWarning"  text="Port number is empty" textFill="#ff0406" GridPane.columnIndex="3" GridPane.rowIndex="8" visible="false"/>
+        	        	
+         <Label fx:id="playerNumberLabelField"  text="Player count: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="5" visible="true"/>
+         <TextField fx:id="playerNumberTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" visible="true"/>
+         <Label fx:id="ipAddTextLabel"  text="IP Address: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="6" visible="true"/>
+       	 <TextField fx:id="ipAddTextField" GridPane.columnIndex="2" GridPane.rowIndex="6" visible="true" prefWidth = "300" />        	
+         <Label fx:id="portTextLabel"  text="Port Number: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="7" visible="true"/>
+         <TextField fx:id="portTextField" GridPane.columnIndex="2" GridPane.rowIndex="7" visible="true"/>        	
+            
+         	<VBox GridPane.columnIndex="2" GridPane.rowIndex="4">
 			    <fx:define>
 			        <ToggleGroup fx:id="tgCommand"/>
 			    </fx:define>
@@ -52,10 +60,11 @@
 			        <RadioButton fx:id="joinLobbyRb" text="Join Lobby" toggleGroup="$tgCommand" onAction="#showLobby"/>
 			    </children>
 			</VBox>
-            <Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@Login.css" text="Connect" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+            <Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@Login.css" text="Connect" GridPane.columnIndex="2" GridPane.rowIndex="9" />
             
             <Label text="Username: " textFill="#f89406" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="usernameTextfield" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+         
             <StackPane GridPane.columnIndex="2" GridPane.rowIndex="1">
                <children>
                   <ImageView fx:id="Defaultview" fitHeight="93" fitWidth="300" pickOnBounds="true" preserveRatio="true">

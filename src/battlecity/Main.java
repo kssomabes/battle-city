@@ -54,6 +54,8 @@ public class Main extends Application	 {
 	ConnectPacket established;
 	String username = "";
 	String lobbyId = "";
+	String ipAdd = "";
+	int port; 
 	Player loggedIn;
 	Socket connection;
 	DataInputStream inputStream; 
@@ -65,25 +67,6 @@ public class Main extends Application	 {
 	    public void start(Stage primaryStage) throws Exception {
 	        primaryStageObj = primaryStage;
 
-//	        primaryStage.setScene(new Scene(gameBoard));
-//	        gameBoard.requestFocus();	// lol para saan ito?
-//	        stage.show();
-	        
-//	        GameController gameController = new GameController();
-//			SwingNode swingNode = new SwingNode();
-//
-//	        SwingUtilities.invokeLater(new Runnable() {
-//	            @Override
-//	            public void run() {
-//	            	gameController.setLayout(null);
-//	            	gameController.setSize(750, 750);
-//	                swingNode.setContent(gameController);
-//	            }
-//	        });
-//	        
-//	        gameBoard.getChildren().add(swingNode);
-//	        gameController.init();
-	        
 	        primaryStage.initStyle(StageStyle.UNDECORATED);
 	        primaryStage.setTitle("Battle City");
 	        primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResource("tank_ico.png").toString()));
@@ -110,7 +93,8 @@ public class Main extends Application	 {
 		}
 	} 
 	
-	public void openChat(ConnectPacket packet,  String username, Socket socket, OutputStream outputStream, DataInputStream inputStream, Player loggedIn, String lobbyId) {
+	public void openChat(ConnectPacket packet,  String username, Socket socket, OutputStream outputStream,
+			DataInputStream inputStream, Player loggedIn, String lobbyId, String ipAdd, int port) {
 		this.established = packet;
 		this.connection = socket;
 		this.username = username; 
@@ -118,6 +102,8 @@ public class Main extends Application	 {
 		this.outputStream = outputStream;
 		this.loggedIn = loggedIn;
 		this.lobbyId = lobbyId;
+		this.ipAdd = ipAdd;
+		this.port = port;
 		chat();
 	}
 	
@@ -149,7 +135,7 @@ public class Main extends Application	 {
             public void handle(ActionEvent event) {
 				root.getChildren().remove(vbEndgame);
 				try {
-					gameController = new GameController(username);
+					gameController = new GameController(username, ipAdd, port);
 					gameController.ResetPlayer();
 		        	gameController.setOnMouseClicked(new EventHandler<MouseEvent>(){
 
@@ -160,8 +146,6 @@ public class Main extends Application	 {
 
 		            });
 
-//			        	COMMENT THE WHILE LOOP TO DISABLE UDP WAITING OF PLAYERS
-//						TODO improve showing of lobby id 
 			        System.out.println("The lobby ID is " + lobbyId);
 			        
 			        gameController.setApp(mainapplication);
@@ -199,7 +183,7 @@ public class Main extends Application	 {
         if (fxml.equals("ChatView.fxml")) {        	
 //        	Load board when the number of players is met 
 //        	game controller also connects to UDP
-        	this.gameController = new GameController(this.username);
+        	this.gameController = new GameController(this.username, this.ipAdd, this.port);
         	gameController.setOnMouseClicked(new EventHandler<MouseEvent>(){
 
                 @Override
@@ -209,8 +193,6 @@ public class Main extends Application	 {
 
             });
 
-//        	COMMENT THE WHILE LOOP TO DISABLE UDP WAITING OF PLAYERS
-//			TODO improve showing of lobby id 
 	        System.out.println("The lobby ID is " + this.lobbyId);
 	        root.getChildren().add(page);
 

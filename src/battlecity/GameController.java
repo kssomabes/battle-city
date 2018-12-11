@@ -24,7 +24,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameController extends Pane implements Constants, Runnable, KeyListener {
+public class GameController extends Pane implements Constants, Runnable{
 
 	private final int UP = 1;
 	private final int DOWN = 2;
@@ -50,6 +50,8 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	Thread thread;
 	int gameStage = WAITING_FOR_PLAYERS; // initial game stage
 	int bulletsfired = 0;
+	String ipAdd = "";
+	int port; 
 	private List<GameObject> otherPlayers = new ArrayList<>();
 	private List<GameObject> bullets = new ArrayList<>();
 	private List<GameObject> blocks = new ArrayList<>();
@@ -58,12 +60,14 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	private GameObject player;
 
 	// Add throws Exception to handle socket exception
-	public GameController(String name) throws Exception {
+	public GameController(String name, String ipAdd, int port) throws Exception {
 		// Add the GUI stuff here
 		addKeyListeners();
 		this.setFocusTraversable(true);
 		this.playerName = name;
 		this.setFocusTraversable(true);
+		this.ipAdd = ipAdd;
+		this.port = port;
 		socket.setSoTimeout(4000);
 		thread = new Thread(this);
 		thread.start();
@@ -538,42 +542,12 @@ public class GameController extends Pane implements Constants, Runnable, KeyList
 	public void send(String msg) {
 		try {
 			byte[] buf = msg.getBytes();
-			InetAddress address = InetAddress.getByName(IPADD);
-			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, PORT);
+			InetAddress address = InetAddress.getByName(this.ipAdd);
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, this.port);
 			socket.send(packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	// Send the keyEvent to the server to inform other players
-	// Also send the initial coordinates of the user
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			x += 10;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			x -= 10;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			y -= 10;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			y += 10;
-		}
-		// send("PLAYER " + playerName + " " + this .x + " " + this.y);
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public boolean udpIsConnected() {
