@@ -245,7 +245,7 @@ public class GameController extends Pane implements Constants, Runnable{
 		});
 	}
 
-	private void setGameObject(double x, double y, String ID) {
+	private void setGameObject(double x, double y, String ID, int lastDirection) {
 		final ObservableList<Node> children = this.getChildren();
 		final String id = new String(ID);
 		try {
@@ -257,6 +257,19 @@ public class GameController extends Pane implements Constants, Runnable{
 							public void run() {
 								node.setTranslateX(x);
 								node.setTranslateY(y);
+								switch(lastDirection) {
+						        	case UP:
+						        		node.setRotate(0);
+						        		break;
+						        	case DOWN:
+						        		node.setRotate(180);
+						        		break;
+						        	case LEFT:
+						        		node.setRotate(270);
+						        		break;
+						        	case RIGHT:
+						        		node.setRotate(90);
+						        }
 							}
 						});
 						break;
@@ -266,7 +279,7 @@ public class GameController extends Pane implements Constants, Runnable{
 		}
 		catch(Exception e) {
 			System.out.println("Delay. Retrying");
-			setGameObject(x, y, ID);
+			setGameObject(x, y, ID, lastDirection);
 		}
 
 	}
@@ -358,7 +371,7 @@ public class GameController extends Pane implements Constants, Runnable{
 		player.updateCooldown();
 
 		send("PLAYER " + this.playerName + " " + player.getView().getTranslateX() + " "
-				+ player.getView().getTranslateY());
+				+ player.getView().getTranslateY() + " " + player.getLastDirection());
 		player.updateplayer(blocks);
 		
 		int winnerfound = 1;
@@ -476,11 +489,12 @@ public class GameController extends Pane implements Constants, Runnable{
 
 							double x = Double.parseDouble(playerInfo[2]);
 							double y = Double.parseDouble(playerInfo[3]);
+							int lastDirection = Integer.parseInt(playerInfo[4]);
 
 							// otherPlayers.clear();
 
 							// addGameObject(playerZ, x, y);
-							setGameObject(x, y, pname);
+							setGameObject(x, y, pname, lastDirection);
 						}
 					} else if (serverData.startsWith("CREATEBULLET")) {
 						String[] objectinfos = serverData.split(":");

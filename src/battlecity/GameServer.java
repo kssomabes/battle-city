@@ -120,14 +120,16 @@ public class GameServer implements Runnable, Constants{
 							broadcast("DISCONNECTED " + tokens[1]);
 						}
 					}else if (receivedDataString.startsWith("PLAYER")) {
-//						Format: PLAYER <name> <x> <y>
+//						Format: PLAYER <name> <x> <y> <lastDirection>
 						if (game.getPlayerCount() > 0) {
 							String [] playerInfo = receivedDataString.split(" ");
 							String pname = playerInfo[1];
 							double x = Double.parseDouble(playerInfo[2].trim());
 							double y = Double.parseDouble(playerInfo[3].trim());
+							int lastDirection = Integer.parseInt(playerInfo[4].trim());
 							NetPlayer player = (NetPlayer) this.game.getPlayers().get(pname);					  
 							player.setCoordinates(x, y);
+							player.setLastDirection(lastDirection);
 							
 							// Since server received a player packet update the game state
 							game.update(pname, player); 

@@ -7,6 +7,7 @@ public class NetPlayer {
 	private int port;
 	private double x = -1 , y = -1;
 	private String name;
+	private int lastDirection;
 	
 	public NetPlayer(String name, InetAddress address, int port){
 		this.address = address;
@@ -35,12 +36,21 @@ public class NetPlayer {
 		return this.x + " " + this.y;
 	}
 	
+	public void setLastDirection(int lastDirection) {
+		this.lastDirection = lastDirection;
+	}
+	
+	public int getLastDirection() {
+		return lastDirection;
+	}
+	
 	public String toString() {
 		String retval = "";
 		retval += "PLAYER ";
 		retval += name + " ";
 		retval += x + " ";
-		retval += y;
+		retval += y +" ";
+		retval += lastDirection;
 		return retval;
 	}
 }
