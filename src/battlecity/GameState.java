@@ -10,12 +10,18 @@ public class GameState{
 
 	private Map players = new HashMap <String, NetPlayer>();
 	private Map spawnPoints = new HashMap <Integer, Point2D>();
+	private Map playerColor = new HashMap <Integer, String>();
 	
 	public GameState(){
 		spawnPoints.put(1, new Point2D(50, 50));
 		spawnPoints.put(2, new Point2D(50, 700));
 		spawnPoints.put(3, new Point2D(700, 700));
 		spawnPoints.put(4, new Point2D(700, 50));
+		
+		playerColor.put(1, "tank1.png");
+		playerColor.put(2, "tank2.png");
+		playerColor.put(3, "tank3.png");
+		playerColor.put(4, "tank4.png");
 	}
 
 // for updating game state adding or removing players
@@ -25,7 +31,9 @@ public class GameState{
 			// If add: the player in packet is a new player, not a redundant packet
 			// If remove: the player in packet is a valid player
 			Point2D receivedCoord = spawnPlayer();
+			String color = spawnPlayerColor();
 			player.setCoordinates(receivedCoord.getX(), receivedCoord.getY());
+			player.setColor(color);
 			players.put(name, player);
 			return true;
 		}
@@ -67,6 +75,19 @@ public class GameState{
 //		Remove in spawnPoints so that it can no longer be chosen again
 		spawnPoints.remove(index);
 		return cnv;
+	}
+	
+	public String spawnPlayerColor() {
+		Integer index = -1;
+		String y = null; 
+		
+		while (y == null) {
+			index = new Random().nextInt(4) + 1;
+			y = (String) playerColor.get(index);
+		}
+		
+		playerColor.remove(index);
+		return y;
 	}
 	
 	// As of now only passes the player information

@@ -58,7 +58,8 @@ public class GameController extends Pane implements Constants, Runnable{
 	private List<GameObject> powerUps = new ArrayList<>();
 	public AnimationTimer timer;
 	private GameObject player;
-
+	private String color;
+	
 	// Add throws Exception to handle socket exception
 	public GameController(String name, String ipAdd, int port) throws Exception {
 		// Add the GUI stuff here
@@ -88,7 +89,8 @@ public class GameController extends Pane implements Constants, Runnable{
 		player = new GamePlayer();
 		player.setPosition(new Point2D(0, 0));
 		player.setLife(5);
-
+		player.setImage(color, 20, 20);
+		
 		// Load Map
 		loadMap();
 
@@ -449,6 +451,7 @@ public class GameController extends Pane implements Constants, Runnable{
 
 							if (pname.equals(this.playerName)) {
 								System.out.println("Current player here ");
+								this.color = playerInfo[5];
 								continue;
 							}
 							System.out.println("Player name: " + pname);
@@ -456,6 +459,7 @@ public class GameController extends Pane implements Constants, Runnable{
 							double y = Double.parseDouble(playerInfo[3]);
 
 							GameObject playerZ = new GamePlayer();
+							playerZ.setImage(playerInfo[5], 20, 20);
 							playerZ.setPosition(new Point2D(x, y));
 							playerZ.setLife(5);
 							addGameObject(playerZ, x, y, pname);

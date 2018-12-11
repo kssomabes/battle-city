@@ -44,6 +44,14 @@ public class GameObject implements Constants {
         this.imgView.setFitHeight(height);
         this.imgView.setFitWidth(width);
     }
+    
+    public void setImage(String image, int height, int width) {
+    	InputStream is = getClass().getClassLoader().getResourceAsStream(image);
+		Image img = new Image(is);
+        this.imgView = new ImageView(img);
+        this.imgView.setFitHeight(height);
+        this.imgView.setFitWidth(width);
+    }
 
     public void update() {
         imgView.setTranslateX(imgView.getTranslateX() + position.getX());

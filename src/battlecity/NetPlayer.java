@@ -8,6 +8,7 @@ public class NetPlayer {
 	private double x = -1 , y = -1;
 	private String name;
 	private int lastDirection;
+	private String color;
 	
 	public NetPlayer(String name, InetAddress address, int port){
 		this.address = address;
@@ -25,6 +26,14 @@ public class NetPlayer {
 
 	public String getName(){
 		return name;
+	}
+	
+	public void setColor(String color) {
+		this.color = color;
+	}
+	
+	public String getColor(){
+		return color;
 	}
 	
 	public void setCoordinates(double x, double y) {
@@ -50,7 +59,8 @@ public class NetPlayer {
 		retval += name + " ";
 		retval += x + " ";
 		retval += y +" ";
-		retval += lastDirection;
+		retval += lastDirection + " ";
+		retval += color;;
 		return retval;
 	}
 }
