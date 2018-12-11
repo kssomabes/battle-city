@@ -12,4 +12,10 @@ public interface Constants {
 	public static final int PORT = 999;
 //	localhost will be used for now - replace later
 	public static final String IPADD = "localhost";
+	
+//	Movements
+    public final int UP = 1;
+    public final int DOWN = 2;
+    public final int LEFT = 3;
+    public final int RIGHT = 4;
 }
