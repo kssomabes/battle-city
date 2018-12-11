@@ -6,7 +6,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -17,6 +23,7 @@ import proto.TcpPacketProtos.TcpPacket.PacketType;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -203,6 +210,13 @@ public class UserController extends Pane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	BackgroundSize bSize = new BackgroundSize(750, 750, false, false, false, false);
+    	Background background2 = new Background(new BackgroundImage(new Image((InputStream) getClass().getClassLoader().getResourceAsStream("instructions.png")),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                bSize));
+    	borderPane.setBackground(background2);
 
         /* Drag and Drop */
         borderPane.setOnMousePressed(event -> {
