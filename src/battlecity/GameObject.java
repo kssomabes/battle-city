@@ -21,10 +21,6 @@ public class GameObject implements Constants {
     private Point2D position = new Point2D(0, 0);
 
     private final int STOP = 0;
-    private final int UP = 1;
-    private final int DOWN = 2;
-    private final int LEFT = 3;
-    private final int RIGHT = 4;
     private int lastDirection = 1;
     private int direction = 0;
     private int invulnerableTimeLeft = 0;

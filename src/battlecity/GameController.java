@@ -131,13 +131,13 @@ public class GameController extends Pane implements Constants, Runnable{
 
 	public void addKeyListeners() {
 		this.setOnKeyPressed(e -> {
-			if (e.getCode() == KeyCode.UP) {
+			if (e.getCode() == KeyCode.W || e.getCode() == KeyCode.UP) {
 				player.goUp(1);
-			} else if (e.getCode() == KeyCode.DOWN) {
+			} else if (e.getCode() == KeyCode.S || e.getCode() == KeyCode.DOWN) {
 				player.goDown(1);
-			} else if (e.getCode() == KeyCode.LEFT) {
+			} else if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.LEFT) {
 				player.goLeft(1);
-			} else if (e.getCode() == KeyCode.RIGHT) {
+			} else if (e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT) {
 				player.goRight(1);
 			} else if (e.getCode() == KeyCode.SPACE) {
 				if (player.isAlive()) {
@@ -182,13 +182,13 @@ public class GameController extends Pane implements Constants, Runnable{
 			this.requestFocus();
 		});
 		this.setOnKeyReleased(e -> {
-			if (e.getCode() == KeyCode.UP && player.getDirection() == UP) {
+			if ((e.getCode() == KeyCode.W || e.getCode() == KeyCode.UP) && player.getDirection() == UP) {
 				player.stopTank();
-			} else if (e.getCode() == KeyCode.DOWN && player.getDirection() == DOWN) {
+			} else if ((e.getCode() == KeyCode.S || e.getCode() == KeyCode.DOWN) && player.getDirection() == DOWN) {
 				player.stopTank();
-			} else if (e.getCode() == KeyCode.LEFT && player.getDirection() == LEFT) {
+			} else if ((e.getCode() == KeyCode.A || e.getCode() == KeyCode.LEFT) && player.getDirection() == LEFT) {
 				player.stopTank();
-			} else if (e.getCode() == KeyCode.RIGHT && player.getDirection() == RIGHT) {
+			} else if ((e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT)&& player.getDirection() == RIGHT) {
 				player.stopTank();
 			}
 		});
@@ -256,6 +256,7 @@ public class GameController extends Pane implements Constants, Runnable{
 					if (node.getId().equals(id)) {
 						Platform.runLater(new Runnable() {
 							@Override
+//							ZXY
 							public void run() {
 								node.setTranslateX(x);
 								node.setTranslateY(y);
@@ -287,7 +288,8 @@ public class GameController extends Pane implements Constants, Runnable{
 	}
 
 	private void onUpdate() { // Collision detection
-		for (GameObject bullet : bullets) { // Hindi ko alam ahh, baka isang loop lang ang kailangan nilang lahat???
+//		Check if bullets and blocks collide
+		for (GameObject bullet : bullets) {
 			for (GameObject block : blocks) {
 				if (bullet.isColliding(block)) {
 					bullet.setAlive(false);
@@ -296,6 +298,8 @@ public class GameController extends Pane implements Constants, Runnable{
 					this.requestFocus();
 				}
 			}
+			
+//			check if bullets collide with player
 			if (bullet.isColliding(player)) {
 				bullet.setAlive(false);
 				player.hit();
@@ -321,11 +325,25 @@ public class GameController extends Pane implements Constants, Runnable{
 				}
 			}
 		}
-
+		
+		for (GameObject bulletX : bullets) {
+//			Check if bullets collide
+			for (GameObject bulletY : bullets) {
+				if (bulletX.equals(bulletY)) continue; 
+				
+				if (bulletX.isColliding(bulletY)) {
+					bulletX.setAlive(false);
+					bulletY.setAlive(false);
+					this.getChildren().removeAll(bulletX.getView(), bulletY.getView());
+				}
+			}
+		}
+		
+//		Check if spawned power up collides with blocks
 		for (GameObject powerUp : powerUps) {
 			for (GameObject block : blocks) {
-				if (powerUp.isColliding(block)) { // Para hindi mag-spawn yung powerup sa loob ng isang
-													// block/wall/terrain
+				if (powerUp.isColliding(block)) {
+
 					powerUp.setAlive(false);
 
 					this.getChildren().removeAll(powerUp.getView());
@@ -508,7 +526,6 @@ public class GameController extends Pane implements Constants, Runnable{
 						int position = Integer.parseInt(objectinfos[4]);
 						if (!id.split("_")[0].equals(playerName)) {
 							Bullet bullet = new Bullet();
-							int UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4;
 							// bullet.setPosition(player.getPosition().normalize().multiply(2)); // Speed of
 							// bullet
 							//bullet.setPosition(player.getPosition());
@@ -539,14 +556,8 @@ public class GameController extends Pane implements Constants, Runnable{
 							timer.stop();
 							thread.stop();
 					}
-				} else {
-					// Other stages not catched yet
-					// For player movement repainting?
-					// Do something
-					System.out.println("Something else");
-				}
+				} 
 			}
-			// Do something if complete/incomplete or receiving other players' data
 		}
 
 		if (gameStage != GAME_START) {
